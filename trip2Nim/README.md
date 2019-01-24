@@ -1,6 +1,6 @@
 # TripToNim
-TripToNim is a collection of scripts for processing trip3D external magnetic 
-field data and converting it into a file formate that NIMROD can read.
+A collection of scripts for processing trip3D external magnetic field data and 
+converting it into a file format that NIMROD can read.
 
 ## Inputs:
   - trip3D probe_gb.out
@@ -22,5 +22,5 @@ field data and converting it into a file formate that NIMROD can read.
   - [ ] Verify that I'm using the correct mode number (n or -n)
   - [ ] Verify FFT normalization (where do I divide by N)
 
-## Future Work: 
-  - Possibly use vector potential instead of B Field
+## Possible Future Work: 
+  - Use vector potential instead of B Field
