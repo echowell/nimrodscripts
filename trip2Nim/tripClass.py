@@ -24,7 +24,7 @@ class TripClass:
         self.probeAFile = aFile
     def readRz (self):
         ''' Read probeRz File as Save data '''
-    #todo
+        #todo
     def readBFile (self):
         ''' Read probeBFile as Save Data '''
         #b data is stores phi, r, z, B_phi, B_R, B_Z, B_p, B_mag, PsiN_pol
