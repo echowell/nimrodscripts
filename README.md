@@ -1,5 +1,5 @@
 ## NIMSCRIPTS
-A collection of python scripts that are part of my NIMROD workflow NIMROD. 
+A collection of python scripts that are part of my NIMROD workflow. 
 
 ### NIMROD 
 Information on the NIMROD code can be found at the official [NIMROD website](https://nimrodteam.org/)
