@@ -1,6 +1,5 @@
 # TripToNim
-A collection of scripts for processing trip3D external magnetic field data and 
-converting it into a file format that NIMROD can read.
+A collection of scripts for processing trip3D external magnetic field data and converting it into a format that NIMROD reads.
 
 ## Inputs:
   - trip3D probe_gb.out
