@@ -3,9 +3,11 @@ A collection of scripts for generating surface mn plots from NIMROD output
 These scripts were developed by Matt Beidler. 
 
 ## Inputs
-  - Not sure
+  - fgProfs binary
+  - xy_slice binary
  
 ## Outputs
+  - Numerous profile slices
   - Pretty Surface MN plots
   - Possibly more (not sure)
   
@@ -13,7 +15,7 @@ These scripts were developed by Matt Beidler.
   - Not sure 
   
 ## Status of the code
-  - Matt ran it this morning on his computer and it worked
+  - Code runs
   
 ## Todo
   - [ ] Run the code and figure out how it works
