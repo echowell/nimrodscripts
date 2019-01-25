@@ -2,3 +2,9 @@
 __pycahce__/
 *.py[cod]
 *$py.class
+
+# Ignore bin data files
+*.bin
+
+# Ignore png files
+*.png

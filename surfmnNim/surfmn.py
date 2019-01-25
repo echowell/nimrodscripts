@@ -5,8 +5,8 @@ from matplotlib import ticker
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import math
-from FieldIndex2 import files,R,Z,BRr,BRi,B0R,B0Z,B0T,qcon1,J0T,pd
-from fgprofs1 import rho,qg,irho2,irho3,irho4
+from fieldIndex import files,R,Z,BRr,BRi,B0R,B0Z,B0T,qcon1,J0T,pd
+from fgProfs import rho,qg,irho2,irho3,irho4
 
 #xyfile='xy_slice16.bin'
 fgfile='fgprofs.bin'

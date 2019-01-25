@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from surfmn3 import files,rho1,bnm,irho12,irho13,irho14,irho15,irho16,rho,fgfile,irho2,irho3,irho4,q1,irho110,m
+from surfmn import files,rho1,bnm,irho12,irho13,irho14,irho15,irho16,rho,fgfile,irho2,irho3,irho4,q1,irho110,m
 
 bnmflip=bnm[:,::-1]
 

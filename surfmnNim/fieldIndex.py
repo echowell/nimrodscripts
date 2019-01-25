@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python
 
 import struct
 import numpy as np
@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib import ticker
-from fgprofs1 import rho,qg,irho2,irho3,irho4
+from fgProfs import rho,qg,irho2,irho3,irho4
 
 
 # xy have elecd=0.25
