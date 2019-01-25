@@ -4,10 +4,15 @@
 
 import sys
 sys.path.insert(0, "./")
+import os
 import tripClass as tc
 
-readDirectory = "/Users/ehowell/SCRATCH/nimruns/echowell_runs/heatwidthscaling/166439/03300/EF_GRID_18121801/"
-writeDirectory = "/Users/ehowell/SCRATCH/testingjunk/"
+homeDir = os.environ['HOME']
+
+readDirectory = homeDir + "/SCRATCH/nimruns/echowell_runs/heatwidthscaling/166439/03300/EF_GRID_18121801/"
+
+writeDirectory = homeDir + "/SCRATCH/testingjunk/"
+
 shotNumber = "166439"
 timeSlice = "03300"
 
