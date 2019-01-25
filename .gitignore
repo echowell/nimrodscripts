@@ -1,0 +1,4 @@
+# Byte-compiled / optimized / DLL files
+__pycahce__/
+*.py[cod]
+*$py.class
