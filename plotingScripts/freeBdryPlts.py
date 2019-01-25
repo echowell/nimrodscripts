@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
+homeDir = os.environ['HOME']
 
-
-fname="/home/research/ehowell/SCRATCH/NTM_TESTING/18102201/fbdry.txt"
+fname=homeDir + "SCRATCH/NTM_TESTING/18102201/fbdry.txt"
 data = np.loadtxt(fname)
 
 ncoils = int(max(data[:,1]))

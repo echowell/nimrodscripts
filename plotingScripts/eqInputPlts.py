@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 
+homeDir = os.environ['HOME']
 
-fname="/home/research/ehowell/SCRATCH/NTM_TESTING/18102204_refine/eq_input_python.out"
+fname=home + "/SCRATCH/NTM_TESTING/18102204_refine/eq_input_python.out"
 
 
 data = np.loadtxt(fname)
