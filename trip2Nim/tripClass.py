@@ -62,9 +62,13 @@ class TripClass:
             self.btReal[:,ii] = self.bData[startIndex:startIndex+self.npoints,3]
         # i don't know if I need to flip phi or change the sign of Bphi
         # self.flipPhi()
-        self.brPhase = np.fft.fft(self.brReal,axis=1)
-        self.bzPhase = np.fft.fft(self.bzReal,axis=1)
-        self.btPhase = np.fft.fft(self.btReal,axis=1)
+        # to be consistant with nimrod I should use the forward fft when going
+        # from real space to fourier space, and I also need to devide by nphi
+        # numpy does not have an option for normalizing the FFT by n,
+        # it can only do sqrt(N) normalization or normalize the IFFT by N.
+        self.brPhase = np.fft.fft(self.brReal,axis=1)/(float(self.nphi))
+        self.bzPhase = np.fft.fft(self.bzReal,axis=1)/(float(self.nphi))
+        self.btPhase = np.fft.fft(self.btReal,axis=1)/(float(self.nphi))
     def writeNimrodBext(self,path,baseFileName,fileExt):
         if (self.nphi % 2 == 0): #even
             maxnphi = int(self.nphi/2 - 1)
