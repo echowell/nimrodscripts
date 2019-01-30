@@ -75,7 +75,7 @@ class TripClass:
         else: #odd
             maxnphi = int((self.nphi-1)/2)
         for ii in range (maxnphi +1):
-            tempFileName = path + baseFileName + str(ii) + fileExt
+            tempFileName = path + baseFileName +"{0:0=2d}".format(ii)  + fileExt
             thisFile = open(tempFileName,'w')
             for jj in range(self.brPhase.shape[0]):
                 thisLine = '{: 16.16e}'.format(self.brPhase[jj,ii].real) + ", " 
