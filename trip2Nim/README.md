@@ -19,7 +19,7 @@ A collection of scripts for processing trip3D external magnetic field data and c
   - [ ] Verify sign of B toroidal
   - [ ] Verify sign of phi
   - [ ] Verify that I'm using the correct mode number (n or -n)
-  - [ ] Verify FFT normalization (where do I divide by N)
+  - [x] Verify FFT normalization (where do I divide by N)
 
 ## Possible Future Work: 
   - Use vector potential instead of B Field
