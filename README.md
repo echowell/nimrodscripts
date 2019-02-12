@@ -10,3 +10,4 @@ Information on the NIMROD code can be found at the official [NIMROD website](htt
  - **diiidNim:** A collection of scripts that are useful for simulations of DIII-D experiments.
  - **plotingScripts** A collection of scripts for plotting nimrod output in matplotlib.
  - **bilderScripts** Scripts that I use when running builder on my mac
+ - **nimflSeed** Generate a random collection of points for seeding NIMFL
