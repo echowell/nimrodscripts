@@ -76,6 +76,7 @@ homeDir = os.environ['HOME']
 relDir = "/SCRATCH/test_vac_fl/"
 fileName = "surfcross0000050.test.txt"
 fullFileName = homeDir+relDir+fileName
+plotTitle = "Vacuum Magnetic Footpoint with n=0-5"
 pltt0=0.
 plttf=360.
 plts0=1.0
@@ -85,11 +86,12 @@ prosData = sortData(rawData)
 print(prosData)
 
 for ii in range(prosData.shape[0]):
-    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],s=10)
+    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],s=5)
 
 plt.axis([pltt0,plttf,plts0,pltsf])
 plt.xlabel('Toroidal Angle (deg)')
 plt.ylabel('Distance along wall (m)')
+plt.title(plotTitle)
 plt.show()
 #print(prosData)
 #print(fullFileName)
