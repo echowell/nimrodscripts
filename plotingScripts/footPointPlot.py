@@ -37,7 +37,7 @@ def rzToS(r,z):
     #print(r,z,s)
     return s
 
-def sortData(rawData):
+def sortData(rawData,pssData):
     lastLine = -1
     numLines=0
     maxHits=1
@@ -55,7 +55,16 @@ def sortData(rawData):
 #        print(msg)
 #    print(numLines)
 #    print(maxHits)
-    prosData = np.zeros([numLines,maxHits,2])
+    prosData = np.zeros([numLines,maxHits,3])
+    pssDict = {}
+#    tempPss=np.zeros([int(np.amax(pssData[:,3])),2])
+    
+    lastLine = -1
+    for ii in range(pssData.shape[0]):
+        if int(pssData[ii,3])!=lastLine:
+            lastLine=int(pssData[ii,3])
+            pssDict[lastLine] = pssData[ii,2]
+
 # for physical data phi in [0,2pi] use a large phi to hide data from plot
     prosData[:,:,1]=1000.
     lastLine=-1
@@ -70,28 +79,38 @@ def sortData(rawData):
             lastLine=rawData[ii,3]
         prosData[lineIndex,hitIndex,0]=rzToS(rawData[ii,0],rawData[ii,1])
         prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)
+        prosData[lineIndex,hitIndex,2]=pssDict[lastLine]
     return prosData
     
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/test_vac_fl/"
-fileName = "surfcross0000050.test.txt"
+relDir = "/SCRATCH/166439/footpoint_03300/vac/lphi4/"
+fileName = "surfcross0000050.txt"
+pssFileName = "nimfl0000050.dat"
 fullFileName = homeDir+relDir+fileName
+pssFullFileName = homeDir+relDir+pssFileName
 plotTitle = "Vacuum Magnetic Footpoint with n=0-5"
+
 pltt0=0.
 plttf=360.
-plts0=1.0
+plts0=1.15
 pltsf=1.3
+minLength=65
+vMax=1e4
 rawData = np.loadtxt(fullFileName)
-prosData = sortData(rawData)
-print(prosData)
+pssData = np.loadtxt(pssFullFileName)
+prosData = sortData(rawData,pssData)
+
 
 for ii in range(prosData.shape[0]):
-    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],s=5)
+    if prosData[ii,0,2]<minLength: continue
+    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=prosData[ii,:,2],cmap='tab20c',vmin=minLength,vmax=vMax,s=1)
 
 plt.axis([pltt0,plttf,plts0,pltsf])
 plt.xlabel('Toroidal Angle (deg)')
 plt.ylabel('Distance along wall (m)')
 plt.title(plotTitle)
 plt.show()
+
+
 #print(prosData)
 #print(fullFileName)
