@@ -75,14 +75,20 @@ class TripClass:
         else: #odd
             maxnphi = int((self.nphi+1)/2)
         for ii in range (maxnphi +1):
+            
+            if ii==maxnphi:
+                fac=0.5
+            else:
+                fac=1.0
+            print(ii, maxnphi, fac)
             tempFileName = path + baseFileName +"{0:0=2d}".format(ii)  + fileExt
             thisFile = open(tempFileName,'w')
             for jj in range(self.brPhase.shape[0]):
-                thisLine = '{: 16.16e}'.format(self.brPhase[jj,ii].real) + ", " 
-                thisLine+= '{: 16.16e}'.format(self.brPhase[jj,ii].imag) + ", "
-                thisLine+= '{: 16.16e}'.format(self.bzPhase[jj,ii].real) + ", " 
-                thisLine+= '{: 16.16e}'.format(self.bzPhase[jj,ii].imag) + ", "
-                thisLine+= '{: 16.16e}'.format(self.btPhase[jj,ii].real) + ", " 
-                thisLine+= '{: 16.16e}'.format(self.btPhase[jj,ii].imag) + "\n"
+                thisLine = '{: 16.16e}'.format(fac*self.brPhase[jj,ii].real) + ", " 
+                thisLine+= '{: 16.16e}'.format(fac*self.brPhase[jj,ii].imag) + ", "
+                thisLine+= '{: 16.16e}'.format(fac*self.bzPhase[jj,ii].real) + ", " 
+                thisLine+= '{: 16.16e}'.format(fac*self.bzPhase[jj,ii].imag) + ", "
+                thisLine+= '{: 16.16e}'.format(fac*self.btPhase[jj,ii].real) + ", " 
+                thisLine+= '{: 16.16e}'.format(fac*self.btPhase[jj,ii].imag) + "\n"
                 thisFile.write(thisLine)
             thisFile.close()
