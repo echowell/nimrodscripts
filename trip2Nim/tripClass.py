@@ -71,9 +71,9 @@ class TripClass:
         self.btPhase = np.fft.fft(self.btReal,axis=1)/(float(self.nphi))
     def writeNimrodBext(self,path,baseFileName,fileExt):
         if (self.nphi % 2 == 0): #even
-            maxnphi = int(self.nphi/2 - 1)
+            maxnphi = int(self.nphi/2)
         else: #odd
-            maxnphi = int((self.nphi-1)/2)
+            maxnphi = int((self.nphi+1)/2)
         for ii in range (maxnphi +1):
             tempFileName = path + baseFileName +"{0:0=2d}".format(ii)  + fileExt
             thisFile = open(tempFileName,'w')
