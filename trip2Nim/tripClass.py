@@ -17,18 +17,31 @@ class TripClass:
     btReal = np.zeros(1)
     brPhase = np.zeros(1,dtype=np.complex_)
     bzPhase = np.zeros(1,dtype=np.complex_)
-    def __init__ (self,rzFile, aFile, bFile):
+    shiftindex=0
+    def __init__ (self,rzFile, aFile, bFile, shiftindex):
         ''' Initialize TripClass '''
         self.probeRzFile = rzFile
         self.probeBFile = bFile
         self.probeAFile = aFile
+        self.shiftindex = shiftindex
     def readRz (self):
         ''' Read probeRz File as Save data '''
         #todo
     def readBFile (self):
         ''' Read probeBFile as Save Data '''
         #b data is stores phi, r, z, B_phi, B_R, B_Z, B_p, B_mag, PsiN_pol
-        self.bData = np.loadtxt(self.probeBFile,comments='%')
+        if (self.shiftindex==0):
+            self.bData = np.loadtxt(self.probeBFile,comments='%')
+        else:
+            # reorder data becuase jake changed the indexing in NIMROD
+            tempData = np.loadtxt(self.probeBFile,comments='%')
+            self.bData = np.zeros(tempData.shape)
+            maxData=self.bData.shape[0]
+            for ii in range(maxData):
+                if(ii>=self.shiftindex):
+                    self.bData[ii-self.shiftindex,:]=tempData[ii,:]
+                else:
+                    self.bData[maxData-self.shiftindex+ii,:]=tempData[ii+1,:]
     def readAFile (self):
         ''' Read probeAFile as Save Data '''
         #b data is stores phi, r, z, A_phi, A_R, A_Z, A_p, A_mag, PsiN_pol

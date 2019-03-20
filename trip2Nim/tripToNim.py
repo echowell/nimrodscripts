@@ -11,8 +11,8 @@ homeDir = os.environ['HOME']
 
 readDirectory = homeDir + "/SCRATCH/nimruns/echowell_runs/heatwidthscaling/166439/03300/EF_GRID_18121801/"
 
-writeDirectory = homeDir + "/SCRATCH/testingjunk/"
-
+#writeDirectory = homeDir + "/SCRATCH/testingjunk/"
+writeDirectory = homeDir + "/SCRATCH/166439/03300_fgnimeq_q104_reorder/"
 shotNumber = "166439"
 timeSlice = "03300"
 
@@ -27,6 +27,8 @@ rzProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + rzFileSuffix
 aProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + aFileSuffix
 bProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + bFileSuffix
 
-tripData = tc.TripClass(rzProbeFile,aProbeFile,bProbeFile)
+indexShift=5
+tripData = tc.TripClass(rzProbeFile,aProbeFile,bProbeFile,indexShift)
 tripData.processBFile()
+print(tripData.brPhase[0,:])
 tripData.writeNimrodBext(writeDirectory,nimrodRmpFile,nimrodRmpSuffix)
