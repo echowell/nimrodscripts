@@ -30,18 +30,24 @@ class TripClass:
     def readBFile (self):
         ''' Read probeBFile as Save Data '''
         #b data is stores phi, r, z, B_phi, B_R, B_Z, B_p, B_mag, PsiN_pol
+        self.bData = np.loadtxt(self.probeBFile,comments='%')
+    def reorderBFile(self):
+        ''' Reorder the bfile to account for a shift in the data '''
         if (self.shiftindex==0):
-            self.bData = np.loadtxt(self.probeBFile,comments='%')
+            return
         else:
             # reorder data becuase jake changed the indexing in NIMROD
-            tempData = np.loadtxt(self.probeBFile,comments='%')
-            self.bData = np.zeros(tempData.shape)
-            maxData=self.bData.shape[0]
-            for ii in range(maxData):
-                if(ii>=self.shiftindex):
-                    self.bData[ii-self.shiftindex,:]=tempData[ii,:]
-                else:
-                    self.bData[maxData-self.shiftindex+ii,:]=tempData[ii+1,:]
+            tempData = self.bData
+            for ip in range(self.nphi):
+                startIndex= ip * self.npoints
+                for ii in range(self.npoints):
+                    if(ii>=self.shiftindex):
+                        self.bData[ii-self.shiftindex+startIndex,:]=tempData[ii+startIndex,:]
+                    else:
+                        self.bData[self.npoints-self.shiftindex+ii+startIndex,:]=tempData[ii+1+startIndex,:]
+#            self.bData = np.zeros(tempData.shape)
+#            maxData=self.bData.shape[0]
+#            for ii in range(maxData):                
     def readAFile (self):
         ''' Read probeAFile as Save Data '''
         #b data is stores phi, r, z, A_phi, A_R, A_Z, A_p, A_mag, PsiN_pol
@@ -61,6 +67,7 @@ class TripClass:
     def processBFile (self):
         self.readBFile()
         self.findNumPoints(self.bData)
+        self.reorderBFile()
         self.phi = np.zeros(self.nphi)
         self.brReal = np.zeros([self.npoints,self.nphi])
         self.bzReal = np.zeros([self.npoints,self.nphi])
