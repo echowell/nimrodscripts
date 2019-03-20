@@ -15,10 +15,10 @@ A collection of scripts for processing trip3D external magnetic field data and c
   - Code runs but needs to be tested.
 
 ## Todo:
-  - [ ] Test code
-  - [ ] Verify sign of B toroidal
-  - [ ] Verify sign of phi
-  - [ ] Verify that I'm using the correct mode number (n or -n)
+  - [x] Test code
+  - [x] Verify sign of B toroidal
+  - [x] Verify sign of phi
+  - [x] Verify that I'm using the correct mode number (n or -n)
   - [x] Verify FFT normalization (where do I divide by N)
 
 ## Possible Future Work: 
