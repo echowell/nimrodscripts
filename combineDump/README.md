@@ -11,15 +11,18 @@ These scripts combine dumpfiles with multiple Fourier modes, into one larger dum
   - Write new h5 dump files
 
 ## Status: 
-  - Code is in early development
-  - Copied the script pert merge from nimdevel scripts and rename
+  - Code runs and works for 2 dumps files with 1 mode each
+  - Needs more testing
+  - Slow
 
 ## Todo:
   - [x] Make sure I have h5 py
   - [x] Write dumpTime
   - [x] Combine and write keff
-  - [ ] Write seams
-  - [ ] Combine and write rblocks
-  - [ ] Write code to combine two dumpfiles
-  - [ ] Test the output 
-  - [ ] Expand to combing multiple dumpfiles
+  - [x] Write seams
+  - [x] Write file attributes
+  - [x] Combine and write rblocks
+  - [x] Write code to combine two dumpfiles
+  - [x] Test the output with one fourier mode in each dump file 
+  - [ ] Test the output with multiple fourier mode in a dump file 
+  - [ ] Speed up copy (can I avoid the looping)

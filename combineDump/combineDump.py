@@ -20,12 +20,12 @@ import h5py
 from itertools import product
 import numpy as np
 
-vvList = [ 'imbe', 'imve', 'rebe', 'reve' ]
+veList = [ 'bq' , 'diff', 'jq', 'nq', 'peq', 'prq', 'rz', 'vq', 'psi_eq']
+vvList = [ 'imbe', 'imve', 'rebe', 'reve']
 
 vsList = [ 'imconc', 'imnd', 'impe', 'impr', 'imte', 'imti', \
            'reconc', 'rend', 'repe', 'repr', 'rete', 'reti' ]
 
-nList = {0: 0, 1: 11, 2: 22, 3 : 33 }
 
 basePath = '/home/research/ehowell/SCRATCH/166439/03300_q104_reorder_combine/vac/'
 
@@ -33,9 +33,9 @@ firstDump = basePath+'n0/dumpglln0.h5'
 secondDump = basePath+'n1/dumpglln1.h5'
 finalDump = basePath+'n0-5/dumpglln01.h5'
 
-#firstDump = basePath+'n0-5/dumpglln01.h5'
-#secondDump = basePath+'n2/dumpglln2.h5'
-#finalDump = basePath+'n0-5/dumpglln02.h5'
+firstDump = basePath+'n0-5/dumpglln01.h5'
+secondDump = basePath+'n2/dumpglln2.h5'
+finalDump = basePath+'n0-5/dumpglln02.h5'
 
 newStep=0
 newTime=0.0
@@ -49,9 +49,6 @@ f1.copy(f1['dumpTime'], fc)
 fc['dumpTime'].attrs.modify('vsStep',newStep)
 fc['dumpTime'].attrs.modify('vsTime',newTime)
 
-for aname, avalue in fc['dumpTime'].attrs.items():
-    print(aname, avalue)
-
 nk1=f1['keff'].size
 nk2=f2['keff'].size
 nkc = nk1 + nk2
@@ -62,21 +59,62 @@ for ii in range(nk2):
     newKeff[nk1+ii]=f2['keff'][ii]
 fc.create_dataset('keff', data=newKeff)
 
-#f0.create_dataset('keff', data=fe['keff'][:])
-#fe.copy(fe['seams'], f0)
-#for aname, avalue in fe.attrs.items():
-# f0.attrs[aname] = avalue 
+fc.copy(f1['seams'], fc)
+# copy file attriubtes and update nmodes
+for aname, avalue in f1.attrs.items():
+    fc.attrs[aname] = avalue 
+fc.attrs['nmodes'] = nkc
+
+fc.create_group('rblocks')
+# rblocks has no attributes
+#for aname, avalue in f1['rblocks'].attrs.items():
+#    print(aname,avalue)
+#  fc['rblocks'].attrs[aname] = avalue 
+#fc['rblocks'].attrs['nmodes'] = nkc
+
+#loop over rblocks in list
+for re in f1['rblocks'].keys():
+    print('Processing rblock ' + re)
+    g1 = f1['rblocks/'+re]
+    g2 = f2['rblocks/'+re]
+    gc = fc.create_group('rblocks/'+re)
+    for aname, avalue in g1.attrs.items():
+        gc.attrs[aname] = avalue
+    gc.attrs['nfour'] = nkc
+
+    for d1key, d1value in g1.items():
+# copy eq fieds from first dumpfile
+        if d1key.startswith(tuple(veList)):
+            gc.create_dataset(d1key, data=d1value)
+            for aname, avalue in g1[d1key].attrs.items():
+                gc[d1key].attrs[aname] = avalue
+            continue
+        d2value=g2[d1key][:]
+        if(d1key.startswith(tuple(vsList))): #scalar field
+            dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],nkc])
+            for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
+                dcvalue[iv,jv,0:nk1-1]=d1value[iv][jv][0:nk1-1]
+                dcvalue[iv,jv,nk1:nkc-1]=d2value[iv][jv][nk1:nkc-1]
+        else: #vector field
+            dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],3*nkc])
+            for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
+                for nn in range(nk1):
+                    dcvalue[iv,jv,3*nn]=d1value[iv][jv][3*nn]
+                    dcvalue[iv,jv,3*nn+1]=d1value[iv][jv][3*nn+1]
+                    dcvalue[iv,jv,3*nn+2]=d1value[iv][jv][3*nn+2]
+                for nn in range(nk1,nkc):
+                    dcvalue[iv,jv,3*nn]=d2value[iv][jv][3*(nn-nk1)]
+                    dcvalue[iv,jv,3*nn+1]=d2value[iv][jv][3*(nn-nk1)+1]
+                    dcvalue[iv,jv,3*nn+2]=d2value[iv][jv][3*(nn-nk1)+2]
+        gc.create_dataset(d1key, data=dcvalue)
+        for aname, avalue in g1[d1key].attrs.items():
+            gc[d1key].attrs[aname] = avalue
+        print(d1key, d1value.shape, d2value.shape, dcvalue.shape)
+#        print(d1key,d1value.shape,d2value.shape)
+#        for (iv,jv) in product(range(len(d1value)),range(len(d1value[0]))):
+#            if d1key.startswith(tuple(vsList)):
+#                print(d1key)
 '''
-f0.create_group('rblocks')
-for aname, avalue in fe['rblocks'].attrs.items():
-  f0['rblocks'].attrs[aname] = avalue 
-for re in fe['rblocks'].iteritems() :
-  ge = fe['rblocks/'+re[0]]
-  gp = fp['rblocks/'+re[0]]
-  g0 = f0.create_group('rblocks/'+re[0])
-  for aname, avalue in ge.attrs.items():
-    g0.attrs[aname] = avalue
-  print('Processing rblock ' + re[0])
   for de in ge.iteritems() :
     dse = de[1][:]
     if de[0].startswith('psi_eq') : 
