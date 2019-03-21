@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/local/bin/python3
 #
 # Input files:
 #     dumpeq.h5 - hdf5 dump file with equilibrium
@@ -27,16 +27,32 @@ vsList = [ 'imconc', 'imnd', 'impe', 'impr', 'imte', 'imti', \
 
 nList = {0: 0, 1: 11, 2: 22, 3 : 33 }
 
-fe = h5py.File('dumpeq.h5', 'r')
-fp = h5py.File('dumppert.h5', 'r')
-f0 = h5py.File('dumpgll.00000.h5', 'w')
+basePath = '/home/research/ehowell/SCRATCH/166439/03300_q104_reorder_combine/vac/'
 
+firstDump = basePath+'n0/dumpglln0.h5'
+secondDump = basePath+'n1/dumpglln1.h5'
+finalDump = basePath+'n0-5/dumpglln01.h5'
+
+newStep=0
+newTime=0.0
+
+fe = h5py.File(firstDump, 'r')
+fp = h5py.File(secondDump, 'r')
+f0 = h5py.File(finalDump, 'w')
+
+# reset time and step
 fe.copy(fe['dumpTime'], f0)
-f0.create_dataset('keff', data=fe['keff'][:])
-fe.copy(fe['seams'], f0)
-for aname, avalue in fe.attrs.items():
- f0.attrs[aname] = avalue 
+f0['dumpTime'].attrs.modify('vsStep',newStep)
+f0['dumpTime'].attrs.modify('vsTime',newTime)
 
+for aname, avalue in f0['dumpTime'].attrs.items():
+    print(aname, avalue)
+
+#f0.create_dataset('keff', data=fe['keff'][:])
+#fe.copy(fe['seams'], f0)
+#for aname, avalue in fe.attrs.items():
+# f0.attrs[aname] = avalue 
+'''
 f0.create_group('rblocks')
 for aname, avalue in fe['rblocks'].attrs.items():
   f0['rblocks'].attrs[aname] = avalue 
@@ -69,5 +85,5 @@ for re in fe['rblocks'].iteritems() :
     g0.create_dataset(de[0], data=dse)
     for aname, avalue in ge[de[0]].attrs.items():
       g0[de[0]].attrs[aname] = avalue
- 
+'''
      
