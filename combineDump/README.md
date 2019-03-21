@@ -17,7 +17,7 @@ These scripts combine dumpfiles with multiple Fourier modes, into one larger dum
 ## Todo:
   - [x] Make sure I have h5 py
   - [x] Write dumpTime
-  - [ ] Combine and right keff
+  - [x] Combine and write keff
   - [ ] Write seams
   - [ ] Combine and write rblocks
   - [ ] Write code to combine two dumpfiles

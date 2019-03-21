@@ -33,20 +33,34 @@ firstDump = basePath+'n0/dumpglln0.h5'
 secondDump = basePath+'n1/dumpglln1.h5'
 finalDump = basePath+'n0-5/dumpglln01.h5'
 
+#firstDump = basePath+'n0-5/dumpglln01.h5'
+#secondDump = basePath+'n2/dumpglln2.h5'
+#finalDump = basePath+'n0-5/dumpglln02.h5'
+
 newStep=0
 newTime=0.0
 
-fe = h5py.File(firstDump, 'r')
-fp = h5py.File(secondDump, 'r')
-f0 = h5py.File(finalDump, 'w')
+f1 = h5py.File(firstDump, 'r') #fe
+f2 = h5py.File(secondDump, 'r') #fp
+fc = h5py.File(finalDump, 'w') #f0
 
 # reset time and step
-fe.copy(fe['dumpTime'], f0)
-f0['dumpTime'].attrs.modify('vsStep',newStep)
-f0['dumpTime'].attrs.modify('vsTime',newTime)
+f1.copy(f1['dumpTime'], fc)
+fc['dumpTime'].attrs.modify('vsStep',newStep)
+fc['dumpTime'].attrs.modify('vsTime',newTime)
 
-for aname, avalue in f0['dumpTime'].attrs.items():
+for aname, avalue in fc['dumpTime'].attrs.items():
     print(aname, avalue)
+
+nk1=f1['keff'].size
+nk2=f2['keff'].size
+nkc = nk1 + nk2
+newKeff = np.zeros(nkc)
+for ii in range(nk1):
+    newKeff[ii]=f1['keff'][ii]
+for ii in range(nk2):
+    newKeff[nk1+ii]=f2['keff'][ii]
+fc.create_dataset('keff', data=newKeff)
 
 #f0.create_dataset('keff', data=fe['keff'][:])
 #fe.copy(fe['seams'], f0)
