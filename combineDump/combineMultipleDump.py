@@ -11,7 +11,7 @@ import os
 import h5py
 from itertools import product
 import numpy as np
-from sys import exit
+import sys
 homeDir = os.environ['HOME']
 
 #begin user inputs
@@ -62,80 +62,47 @@ for aname, avalue in fileList[0].attrs.items():
 fc.attrs['nmodes'] = nmodes
 
 fc.create_group('rblocks')
-
-exit("Debug") # Successful exit
-
-
-# rblocks has no attributes
-#for aname, avalue in f1['rblocks'].attrs.items():
-#    print(aname,avalue)
-#  fc['rblocks'].attrs[aname] = avalue 
-#fc['rblocks'].attrs['nmodes'] = nkc
-
-#loop over rblocks in list
-for re in f1['rblocks'].keys():
-    print('Processing rblock ' + re)
-    g1 = f1['rblocks/'+re]
-    g2 = f2['rblocks/'+re]
+for aname, avalue in fileList[0]['rblocks'].attrs.items():
+    fc['rblocks'].attrs[aname] = avalue 
+for re in fileList[0]['rblocks'].keys():
+    print('Processing rblock '+re)
+    sys.stdout.flush()
+    gList=[]
+    for id in range(len(fileList)):
+        gList.append(fileList[id]['rblocks/'+re])
     gc = fc.create_group('rblocks/'+re)
-    for aname, avalue in g1.attrs.items():
+    for aname, avalue in gList[0].attrs.items():
         gc.attrs[aname] = avalue
-    gc.attrs['nfour'] = nkc
+    gc.attrs['nfour'] = nmodes
 
-    for d1key, d1value in g1.items():
+    for d1key, d1value in gList[0].items():
+        print('Processing '+d1key)
+        sys.stdout.flush()
 # copy eq fieds from first dumpfile
         if d1key.startswith(tuple(veList)):
             gc.create_dataset(d1key, data=d1value)
-            for aname, avalue in g1[d1key].attrs.items():
+            for aname, avalue in gList[0][d1key].attrs.items():
                 gc[d1key].attrs[aname] = avalue
             continue
-        d2value=g2[d1key][:]
-        if(d1key.startswith(tuple(vsList))): #scalar field
-            dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],nkc])
-            for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
-                dcvalue[iv,jv,0:nk1-1]=d1value[iv][jv][0:nk1-1]
-                dcvalue[iv,jv,nk1:nkc-1]=d2value[iv][jv][nk1:nkc-1]
-        else: #vector field
-            dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],3*nkc])
-            for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
-                for nn in range(nk1):
-                    dcvalue[iv,jv,3*nn]=d1value[iv][jv][3*nn]
-                    dcvalue[iv,jv,3*nn+1]=d1value[iv][jv][3*nn+1]
-                    dcvalue[iv,jv,3*nn+2]=d1value[iv][jv][3*nn+2]
-                for nn in range(nk1,nkc):
-                    dcvalue[iv,jv,3*nn]=d2value[iv][jv][3*(nn-nk1)]
-                    dcvalue[iv,jv,3*nn+1]=d2value[iv][jv][3*(nn-nk1)+1]
-                    dcvalue[iv,jv,3*nn+2]=d2value[iv][jv][3*(nn-nk1)+2]
+        if not(d1key.startswith(tuple(vsList+vvList))):
+            print("Unreconized key: "+d1key)
+            continue
+        for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
+            if(d1key.startswith(tuple(vsList))): #scalar field
+                dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],nmodes])
+                for id in range(len(fileList)):
+                    dvalue=gList[id][d1key][:]
+                    for nn in range(nkList[id]):
+                        dcvalue[iv,jv,nn+kStart[id]]=dvalue[iv][jv][nn]        
+            else: #vector field
+                dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],3*nmodes])
+                for id in range(len(fileList)):
+                    dvalue=gList[id][d1key][:]
+                    for nn in range(nkList[id]):
+                        dcvalue[iv,jv,3*(nn+kStart[id])]=dvalue[iv][jv][3*nn]
+                        dcvalue[iv,jv,3*(nn+kStart[id])+1]=dvalue[iv][jv][3*nn+1]
+                        dcvalue[iv,jv,3*(nn+kStart[id])+2]=dvalue[iv][jv][3*nn+2]
         gc.create_dataset(d1key, data=dcvalue)
-        for aname, avalue in g1[d1key].attrs.items():
+        for aname, avalue in gList[0][d1key].attrs.items():
             gc[d1key].attrs[aname] = avalue
-        print(d1key, d1value.shape, d2value.shape, dcvalue.shape)
-#        print(d1key,d1value.shape,d2value.shape)
-#        for (iv,jv) in product(range(len(d1value)),range(len(d1value[0]))):
-#            if d1key.startswith(tuple(vsList)):
-#                print(d1key)
-'''
-  for de in ge.iteritems() :
-    dse = de[1][:]
-    if de[0].startswith('psi_eq') : 
-      continue
-    dsp = gp[de[0]][:]
-    for (iv,jv) in product(range(len(dse)),range(len(dse[0]))) :
-      if de[0].startswith(tuple(vsList)) :
-	dse[iv][jv] = 0. * len(dse[iv][jv])
-	for n in nList :
-          dse[iv][jv][n] = dsp[iv][jv][nList[n]] 
-      elif de[0].startswith(tuple(vvList)) :
-	#if de[0]=='reve0001' :
-	#  print de[0], iv, jv, len(dse[iv][jv]), dse[iv][jv][3*0:3*0+2], dsp[iv][jv][3*nList[0]:3*nList[0]+2]
-	dse[iv][jv] = 0. * len(dse[iv][jv])
-	for n in nList :
-	  dse[iv][jv][3*n]   = dsp[iv][jv][3*nList[n]]
-	  dse[iv][jv][3*n+1] = dsp[iv][jv][3*nList[n]+1]
-	  dse[iv][jv][3*n+2] = dsp[iv][jv][3*nList[n]+2]
-      
-    g0.create_dataset(de[0], data=dse)
-    for aname, avalue in ge[de[0]].attrs.items():
-      g0[de[0]].attrs[aname] = avalue
-'''
-     
+
