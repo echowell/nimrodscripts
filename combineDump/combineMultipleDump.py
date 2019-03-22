@@ -87,22 +87,26 @@ for re in fileList[0]['rblocks'].keys():
         if not(d1key.startswith(tuple(vsList+vvList))):
             print("Unreconized key: "+d1key)
             continue
+        dsvalue=np.zeros([d1value.shape[0],d1value.shape[1],nmodes])
+        dvvalue=np.zeros([d1value.shape[0],d1value.shape[1],3*nmodes])
         for (iv,jv) in product(range(d1value.shape[0]),range(d1value.shape[1])):
             if(d1key.startswith(tuple(vsList))): #scalar field
-                dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],nmodes])
                 for id in range(len(fileList)):
                     dvalue=gList[id][d1key][:]
                     for nn in range(nkList[id]):
-                        dcvalue[iv,jv,nn+kStart[id]]=dvalue[iv][jv][nn]        
+                        dsvalue[iv,jv,nn+kStart[id]]=dvalue[iv][jv][nn]        
             else: #vector field
-                dcvalue=np.zeros([d1value.shape[0],d1value.shape[1],3*nmodes])
                 for id in range(len(fileList)):
                     dvalue=gList[id][d1key][:]
                     for nn in range(nkList[id]):
-                        dcvalue[iv,jv,3*(nn+kStart[id])]=dvalue[iv][jv][3*nn]
-                        dcvalue[iv,jv,3*(nn+kStart[id])+1]=dvalue[iv][jv][3*nn+1]
-                        dcvalue[iv,jv,3*(nn+kStart[id])+2]=dvalue[iv][jv][3*nn+2]
-        gc.create_dataset(d1key, data=dcvalue)
+                        dvvalue[iv,jv,3*(nn+kStart[id])]=dvalue[iv][jv][3*nn]
+                        dvvalue[iv,jv,3*(nn+kStart[id])+1]=dvalue[iv][jv][3*nn+1]
+                        dvvalue[iv,jv,3*(nn+kStart[id])+2]=dvalue[iv][jv][3*nn+2]
+        if(d1key.startswith(tuple(vsList))): 
+            gc.create_dataset(d1key, data=dsvalue)
+        else:
+            gc.create_dataset(d1key, data=dvvalue)
+
         for aname, avalue in gList[0][d1key].attrs.items():
             gc[d1key].attrs[aname] = avalue
 
