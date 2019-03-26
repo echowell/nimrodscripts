@@ -23,14 +23,18 @@ by integrating the Biot Savart law
   - Write bmn file
 
 ## Status: 
-  - Just starting out
+  - Can setup simple circular coils
+  - ODE integrator up and running
+  - Tested with circular coil and point at the center of coil
+  - Simple test of C coil with n=0 and n=1 pert at 0,0,0
 
 ## Todo:
   - [ ] Read node locations at generate r' points
   - [ ] Write coil class
   - [x] Write initialization for circular coils
-  - [ ] Write initialization for C-coils  
+  - [x] Write initialization for C-coils  
   - [ ] Write initialization for I-coils
-  - [ ] Write Biot-Savart Integrator
-  - [ ] Test integrator for planar coils
+  - [x] Write Biot-Savart Integrator
+  - [x] Test integrator for planar coils
   - [ ] Write FFT and write functionality (can copy lots from trip2NIM)
+  - [ ] Plot coils

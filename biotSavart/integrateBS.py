@@ -7,6 +7,7 @@
 # the first 3 index are the x,y,z locations at (l)
 # the next 3 indexs are the values of bx,by,bz
 
+import sys
 import numpy as np
 import coilClass as cc
 from scipy.integrate import odeint
@@ -37,6 +38,9 @@ def intCoil(thisCoil,xyzp):
         sol0[3]=bxyzVec[0]
         sol0[4]=bxyzVec[1]
         sol0[5]=bxyzVec[2]
-        sol=sodeint(dbFunc,sol0,[0.0,1.0],args=(dxyz,xyzp))
-        bxyzVec=sol[1,3:5]
+        sol=odeint(dBFunc,sol0,[0.0,1.0],args=(dxyz,xyzp))
+        bxyzVec[0]=sol[1,3]
+        bxyzVec[1]=sol[1,4]
+        bxyzVec[2]=sol[1,5]
+    bxyzVec=bxyzVec * thisCoil.current
     return bxyzVec
