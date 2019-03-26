@@ -17,7 +17,7 @@ baseFileName = "brmpn"
 fileExt = ".dat"
 
 
-phiPlanes = 4
+phiPlanes = 20 #n=0->10
 segmentsPerCoil = 1000
 baseCurrent = 1.0
 nPert = 1
@@ -59,7 +59,7 @@ for iNode in range(nodeXYZ.shape[1]):
         bXYZ=np.zeros(3)
         for iCoil in coilList:
             bXYZ[:]+=bs.intCoil(iCoil,nodeXYZ[:,iNode,iPhi])
-        phi = nodeXYZ[2,iNode,iPhi]
+        phi = 2.0*np.pi*iPhi/phiPlanes
 ### transform to bRZPhi
 # bRZPhi accounts for the negative in Bphi due to rzphi coordinates
         bRZPhi[0,iNode,iPhi] = bXYZ[0]*np.cos(phi)+bXYZ[1]*np.sin(phi)
@@ -71,7 +71,7 @@ bZPhase=np.fft.fft(bRZPhi[1,:,:],axis=1)/(float(phiPlanes))
 bPhiPhase=np.fft.fft(bRZPhi[2,:,:],axis=1)/(float(phiPlanes))
 
 ### write brmp files
-if (phiPlanse % 2 == 0): #even
+if (phiPlanes % 2 == 0): #even
     maxnphi = int(phiPlanes/2)
 else: #odd
     maxnphi = int((phiPlanes+1)/2)
@@ -96,6 +96,3 @@ for ii in range (maxnphi +1):
 #for iCoil in coilList:
 #    bvec+=bs.intCoil(iCoil,np.asarray([0.0,0.0,0.0]))
 
-print(coilList[0].segments)
-print(np.pi *2)
-sys.exit("debug")
