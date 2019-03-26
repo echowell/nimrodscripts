@@ -28,7 +28,9 @@ by integrating the Biot Savart law
 ## Todo:
   - [] Read node locations at generate r' points
   - [] Write coil class
-  - [] Write initialization for circular coils, C-coils, and I-coils
+  - [x] Write initialization for circular coils
+  - [] Write initialization for C-coils  
+  - [] Write initialization for I-coils
   - [] Write Biot-Savart Integrator
   - [] Test integrator for planar coils
   - [] Write FFT and write functionality (can copy lots from trip2NIM)
