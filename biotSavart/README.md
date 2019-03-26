@@ -27,14 +27,16 @@ by integrating the Biot Savart law
   - ODE integrator up and running
   - Tested with circular coil and point at the center of coil
   - Simple test of C coil with n=0 and n=1 pert at 0,0,0
+  - Code runs, but still need to debug and test
+  - Much of the functionality needs to be moved to functions, to clean up
 
 ## Todo:
-  - [ ] Read node locations at generate r' points
-  - [ ] Write coil class
+  - [x] Read node locations at generate r' points
+  - [x] Write coil class
   - [x] Write initialization for circular coils
   - [x] Write initialization for C-coils  
   - [ ] Write initialization for I-coils
   - [x] Write Biot-Savart Integrator
   - [x] Test integrator for planar coils
-  - [ ] Write FFT and write functionality (can copy lots from trip2NIM)
+  - [x] Write FFT and write functionality (can copy lots from trip2NIM)
   - [ ] Plot coils
