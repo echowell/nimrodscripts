@@ -27,7 +27,7 @@ by integrating the Biot Savart law
   - ODE integrator up and running
   - Tested with circular coil and point at the center of coil
   - Simple test of C coil with n=0 and n=1 pert at 0,0,0
-  - Code runs, but still need to debug and test
+  - Code runs, n=1 c coil fields look reasonable
   - Much of the functionality needs to be moved to functions, to clean up
 
 ## Todo:
