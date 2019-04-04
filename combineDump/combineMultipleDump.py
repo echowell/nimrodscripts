@@ -16,11 +16,16 @@ homeDir = os.environ['HOME']
 
 #begin user inputs
 
-basePath = homeDir +'/SCRATCH/166439/03300_q104_reorder_combine/vac/'
+basePath = homeDir +'/SCRATCH/166439/03300_q104_reorder_combine/S7Pr1e2/'
 
-dumpList = ['n0/dumpglln0.h5','n1/dumpglln1.h5','n2/dumpglln2.h5','n3/dumpglln3.h5','n4/dumpglln4.h5','n5/dumpglln5.h5']
+dumpList=[]
+for n in range(11):
+    tempFile = 'n'+str(n)+'/dumpglln'+str(n)+'.h5'
+    dumpList.append(tempFile)
 
-finalDump = basePath+'n0-5/test.h5'
+#dumpList = ['n0/dumpglln0.h5','n1/dumpglln1.h5','n2/dumpglln2.h5','n3/dumpglln3.h5','n4/dumpglln4.h5','n5/dumpglln5.h5','n6/dumpglln6.h5','n7/dumpglln7.h5','n8/dumpglln8.h5','n9/dumpglln9.h5','n10/dumpglln10.h5']
+
+finalDump = basePath+'n0-10/dumpgll_lphi5.h5'
 newStep=0
 newTime=0.0
 
