@@ -12,7 +12,7 @@ def rzToS(r,z):
     z1=-1.223
     r2=1.153
     z2=-1.363
-    r3=1.273
+    r3=1.372
     z3=-1.363
     r4=1.372
     r5=1.682
@@ -83,18 +83,20 @@ def sortData(rawData,pssData):
     return prosData
     
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/166439/footpoint_03300/vac/lphi4/"
-fileName = "surfcross0000050.txt"
-pssFileName = "nimfl0000050.dat"
+relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi4/S7Pr1e2/"
+fileName = "surfcross0000000.txt"
+pssFileName = "nimfl0000000.dat"
 fullFileName = homeDir+relDir+fileName
 pssFullFileName = homeDir+relDir+pssFileName
-plotTitle = "Vacuum Magnetic Footpoint with n=0-5"
+plotTitle = "Vacuum Magnetic Footpoint with n=0-21 no sol"
 
 pltt0=0.
 plttf=360.
 plts0=1.15
 pltsf=1.3
-minLength=65
+plts0=0
+pltsf=3
+minLength=10
 vMax=1e4
 rawData = np.loadtxt(fullFileName)
 pssData = np.loadtxt(pssFullFileName)
@@ -103,7 +105,7 @@ prosData = sortData(rawData,pssData)
 
 for ii in range(prosData.shape[0]):
     if prosData[ii,0,2]<minLength: continue
-    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=prosData[ii,:,2],cmap='tab20c',vmin=minLength,vmax=vMax,s=1)
+    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=np.log10(prosData[ii,:,2]),cmap='tab20c',vmin=np.log10(minLength),vmax=np.log10(vMax),s=1)
 
 plt.axis([pltt0,plttf,plts0,pltsf])
 plt.xlabel('Toroidal Angle (deg)')
