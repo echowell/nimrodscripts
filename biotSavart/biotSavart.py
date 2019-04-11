@@ -11,14 +11,14 @@ import coilClass as cc
 import integrateBS as bs
 
 homeDir = os.environ['HOME']
-filePath = homeDir + '/SCRATCH/174446/fgnimeq_iter5_3_brmp/'
+filePath = homeDir + '/SCRATCH/174446/fgnimeq_iter5mod_brmp_lores/'
 rzfile = filePath + 'nimrod_bdry_rz.txt'
 baseFileName = "brmpn"
 fileExt = ".dat"
 
 
-phiPlanes = 20 #n=0->10
-segmentsPerCoil = 1000
+phiPlanes = 4 #n=0->2
+segmentsPerCoil = 500
 baseCurrent = 1.0
 nPert = 1
 

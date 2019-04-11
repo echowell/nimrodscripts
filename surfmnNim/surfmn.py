@@ -8,8 +8,10 @@ import math
 from fieldIndex import files,R,Z,BRr,BRi,B0R,B0Z,B0T,qcon1,J0T,pd
 from fgProfs import rho,qg,irho2,irho3,irho4
 
-#xyfile='xy_slice16.bin'
-fgfile='fgprofs.bin'
+
+fgfile='/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/fgprofs.bin'
+
+mrange=10
 
 Z0=Z[files[0]][0,0]
 R0=R[files[0]][0,0]
@@ -28,70 +30,33 @@ for i in range(len(s[:,0])):
 B0P=np.sqrt((B0R[files[0]])**2+(B0Z[files[0]])**2)
 if J0T[files[0]][0,0]>0: B0P=-B0P
 
-#start1=time.time()
-#calculate q as a function of radius from equilibrium fields
-#q11=np.zeros(len(R[files[0]]))
-#for i in range(len(q11)):
-#    for j in range(len(R[files[0]][0])-1):
-#        q11[i]=q11[i]+ds[i,j]*(-B0T[files[0]][i,j])/(2*math.pi*B0P[i,j]*R[files[0]][i,j]**2) #in R,phi,Z: B0T<0; NIMROD has R,Z,phi: B0T>0#
-#end1=time.time()
-#print 'q from For loop',end1-start1
 
-#start2=time.time() 
+
 dqds=(-B0T[files[0]])/(2*math.pi*B0P*R[files[0]]**2)
 q1=np.trapz(dqds,s,axis=1)
-#end2=time.time()
-#print 'q from vectorization and trapz',end2-start2
-
-#start3=time.time()
-#calculate equilibrium jacobian for [r,pol] locations
-#jac1=np.zeros((len(R[files[0]]),len(R[files[0]][0])))
-#for i in range(len(jac1)):
-#    for j in range(len(jac1[0])):
-#        jac1[i,j]=(q1[i]/(-B0T[files[0]][i,j]))*R[files[0]][i,j]**3*B0P[i,j]  #B0T=R*B_tor
-#end3=time.time()
-#print 'Jac from For loop',end3-start3
-
-#start4=time.time()        
 jac=q1[:,None]*R[files[0]]**3*B0P/(-B0T[files[0]]) 
-#end4=time.time()
-#print 'Jac from vectorization',end4-start4
-
 
 #calculate straight-field line theta (PEST coordinate, Jim's derivation)
 theta_str=np.zeros((len(R[files[0]]),len(R[files[0]][0])))
 dtheta_str=np.zeros((len(R[files[0]]),len(R[files[0]][0])))
 for i in range(len(theta_str[:,0])):
     for j in range(len(theta_str[0,:])-1):
-        theta_str[i,j+1]=theta_str[i,j]+1./q1[i]*(ds[i,j]*(-B0T[files[0]][i,j])/(B0P[i,j]*R[files[0]][i,j]**2))
-        dtheta_str[i,j]=1./q1[i]*(ds[i,j]*(-B0T[files[0]][i,j])/(B0P[i,j]*R[files[0]][i,j]**2))
+        theta_str[i,j+1]=theta_str[i,j]+1./(q1[i]+1.0e-11)*(ds[i,j]*(-B0T[files[0]][i,j])/(B0P[i,j]*R[files[0]][i,j]**2))
+        dtheta_str[i,j]=1./(q1[i]+1.0e-11)*(ds[i,j]*(-B0T[files[0]][i,j])/(B0P[i,j]*R[files[0]][i,j]**2))
     for j in range(len(theta_str[0,:])):
         theta_str[i,j]=theta_str[i,j]-theta_str[i,pd[files[0]]]
 
-#FSArea1=np.zeros((len(R[files[0]])))
-
-#for i in range(len(R[files[0]])):
-#    for j in range(len(R[files[0]][0])):
-#        FSArea1[i]=FSArea1[i]+2*math.pi*dtheta_str[i,j]*jac[i,j]
 
 dFSAAdth=2*math.pi*jac
 FSArea=np.trapz(dFSAAdth,theta_str,axis=1)
 
-#rho11=np.zeros((len(R[files[0]])))
-
-#for i in range(len(R[files[0]])):
-#    for j in range(len(R[files[0]][0])):
-#        rho11[i]=rho11[i]+2*math.pi*dtheta_str[i,j]*jac[i,j]*r_minor[i,j]/FSArea[i]
-
-drhodth=2*math.pi*jac*r_minor/FSArea[:,None]
+drhodth=2*math.pi*jac*r_minor/(FSArea[:,None]+1.0e-11)
 rho1=np.trapz(drhodth,theta_str,axis=1)
 
 rholcfs=rho1[int(len(rho1)*.75)]    
-#rho1lcfs=rho11[int(len(rho11)*.75)]     
                         
 for i in range(len(rho1)):
     rho1[i]=rho1[i]/rholcfs
-#    rho11[i]=rho11[i]/rho1lcfs
 
 for i in range(len(q1)):
     mid2=(q1[i]+2.)*(q1[i+1]+2.)
@@ -114,35 +79,13 @@ for i in range(len(q1)):
         irho110=i
         break
 
-mrange=10
 
 mmax=mrange
 mmin=-mrange
 m=np.linspace(mmin,mmax,mmax-mmin+1)
 
-#start3=time.time()
-#bcnm1=np.zeros((len(files),len(R[files[0]]),(mmax-mmin+1)))
-#bsnm1=np.zeros((len(files),len(R[files[0]]),(mmax-mmin+1)))
-
-#for i in range(len(bcnm1[0])):
-#    for k in range(len(bcnm1[0][0])):
-#        for j in range(len(R[files[0]][0])):
-#            for l in range(len(files)):
-#                if files[l]=='xy_slice00.bin':
-#                    multfact=1/5.e-5
-#                else:
-#                    multfact=1
-#                bcnm1[l,i,k]=bcnm1[l,i,k]+2*math.pi/FSArea[i]*dtheta_str[i,j]*jac[i,j]*multfact*(BRr[files[l]][i,j]*math.cos((mmin+k)*theta_str[i,j])-BRi[files[l]][i,j]*math.sin((mmin+k)*theta_str[i,j]))
-#                bsnm1[l,i,k]=bsnm1[l,i,k]+2*math.pi/FSArea[i]*dtheta_str[i,j]*jac[i,j]*multfact*(-BRr[files[l]][i,j]*math.sin((mmin+k)*theta_str[i,j])-BRi[files[l]][i,j]*math.cos((mmin+k)*theta_str[i,j]))
-
-#bnm1=np.sqrt(bcnm1**2+bsnm1**2)
-#end3=time.time()
-#print 'Bnm from For loop',end3-start3
-
-#start4=time.time()
 bcnm=np.zeros((len(files),(mmax-mmin+1),len(R[files[0]])))
 bsnm=np.zeros((len(files),(mmax-mmin+1),len(R[files[0]])))
-
 
 for l in range(len(bcnm)):
     if files[l]=='xy_slice00.bin':
@@ -150,16 +93,14 @@ for l in range(len(bcnm)):
     else:
         multfact=1
     for k in range(len(bcnm[0])):
-        dbcnmdth=2*np.pi/FSArea[:,None]*jac*multfact*(BRr[files[l]]*np.cos((mmin+k)*theta_str)-BRi[files[l]]*np.sin((mmin+k)*theta_str))
-        dbsnmdth=2*np.pi/FSArea[:,None]*jac*multfact*(-BRr[files[l]]*np.sin((mmin+k)*theta_str)-BRi[files[l]]*np.cos((mmin+k)*theta_str))
+        dbcnmdth=2*np.pi/(FSArea[:,None]+1e-11)*jac*multfact*(BRr[files[l]]*np.cos((mmin+k)*theta_str)-BRi[files[l]]*np.sin((mmin+k)*theta_str))
+        dbsnmdth=2*np.pi/(FSArea[:,None]+1e-11)*jac*multfact*(-BRr[files[l]]*np.sin((mmin+k)*theta_str)-BRi[files[l]]*np.cos((mmin+k)*theta_str))
         
         bcnm[l,k]=np.trapz(dbcnmdth,theta_str,axis=1)
         bsnm[l,k]=np.trapz(dbsnmdth,theta_str,axis=1)
 
 bnm=np.sqrt(bcnm**2+bsnm**2)
-#end4=time.time()
-#print 'Bnm from vectorization and trapz',end4-start4
-
+#
 
 #plot choices
 

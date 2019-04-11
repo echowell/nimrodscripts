@@ -16,17 +16,24 @@ from fgProfs import rho,qg,irho2,irho3,irho4
 
 int_size = 4
 float_size = 4
+nimmx=144
+nimmy=128
+nimpd=5
 
+plotfields=0
 # list of file names to be read
-files=['xy_slice00.bin']#,'xy_slice17.bin','xy_slice260.bin']
+files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/xy_slice01.bin']
+files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_surfmn/xy_slice01.bin']
+files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_surfmn/xy_slice01.bin']
+#,'xy_slice17.bin','xy_slice260.bin']
 #files=['xy_slice15000.bin']
 # slicesy is between 0 and my*pd for all yslices
-slicesy=[5]
+slicesy=[0]
 color=cm.rainbow(np.linspace(0,1,len(slicesy)))
 #I assume all files have the same  size
-mx={files[0]:128}#,files[1]:128,files[2]:128}
-my={files[0]:72}#,files[1]:72,files[2]:72}
-pd={files[0]:5}#,files[1]:5,files[2]:5}
+mx={files[0]:nimmx}#,files[1]:128,files[2]:128}
+my={files[0]:nimmy}#,files[1]:72,files[2]:72}
+pd={files[0]:nimpd}#,files[1]:5,files[2]:5}
 npx={}
 npy={}
 
@@ -234,12 +241,12 @@ for m in range(len(files)):
 
 
 qcon1=np.zeros((npx[files[findex]],npy[files[findex]]))
-fgfile='fgprofs.bin'
+#fgfile='fgprofs.bin'
+fgfile='/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/fgprofs.bin'
 
-vac_frac=.25
 
 for j in range(npy[files[0]]):
-    for i in range(int((1-vac_frac)*(npx[files[0]]-2))):    
+    for i in range(qg[fgfile].size):    
         qcon1[i+1,j]=qg[fgfile][i]
     qcon1[i+2,j]=-5.
         
@@ -258,580 +265,564 @@ lev,delta=np.linspace(pr_min,pr_max,clines,retstep=True)
 
 qlev=np.array([-4,-3,-2])        
 
-fig,ax=plt.subplots(1,2,figsize=(10,6),sharey=True)                
-CS=ax[0].contourf(R[files[0]],Z[files[0]],J0T[files[0]],levels=lev,cmap=cm.seismic)
+if plotfields==1:
+    fig,ax=plt.subplots(1,2,figsize=(10,6),sharey=True)                
+    CS=ax[0].contourf(R[files[0]],Z[files[0]],J0T[files[0]],levels=lev,cmap=cm.seismic)
 
-QS=ax[0].contour(R[files[0]],Z[files[0]],qcon1,levels=qlev,colors='k',linestyles='solid')
+    QS=ax[0].contour(R[files[0]],Z[files[0]],qcon1,levels=qlev,colors='k',linestyles='solid')
 
-fmt = {}
-strs=[r'$q=\!-4$',r'$q=\!-3$',r'$q=\!-2$']
-for l, s in zip(QS.levels, strs):
-    fmt[l] = s
+    fmt = {}
+    strs=[r'$q=\!-4$',r'$q=\!-3$',r'$q=\!-2$']
+    for l, s in zip(QS.levels, strs):
+        fmt[l] = s
 
-manual_locations=[(1.36,0.85),(1.42,0.73),(1.48,0.59)]
+    manual_locations=[(1.36,0.85),(1.42,0.73),(1.48,0.59)]
 
-#ax[0].clabel(QS,qlev,inline=1,fmt=fmt,manual=manual_locations,inline_spacing=15)
+    ax[0].clabel(QS,qlev,inline=1,fmt=fmt,manual=manual_locations,inline_spacing=15)
 
-ax[0].set_aspect('equal')
+    ax[0].set_aspect('equal')
 
-plt.setp(ax[0].get_xticklabels(), fontsize=18)
-plt.setp(ax[0].get_yticklabels(), fontsize=18)
-#plt.setp(ax.get_yticklabels(), fontsize=12)
-#ax.set_xlabel('$\sqrt{\psi} $',fontsize=30)
-#ax.set_ylabel('$q $',fontsize=30,rotation='horizontal')
-ax[0].set_title(r'Real $(J_{\phi})$',fontsize=22)
-ax[0].set_xlabel(r'${\rm R\,(m)}$',fontsize=20)
-ax[0].set_ylabel(r'${\rm Z\,(m)}$',fontsize=20)
-#cbar=plt.colorbar(CS,pad=0.01,format="%0.000f")
-cbar=plt.colorbar(CS,pad=0.01)
-tick_locator = ticker.MaxNLocator(nbins=5)
-cbar.locator = tick_locator
-cbar.ax.tick_params(labelsize=18)
-cbar.ax.yaxis.set_offset_position('left')
-cbar.ax.yaxis.offsetText.set_fontsize(16)
-cbar.formatter.set_powerlimits((0,0))
-cbar.update_ticks()
+    plt.setp(ax[0].get_xticklabels(), fontsize=18)
+    plt.setp(ax[0].get_yticklabels(), fontsize=18)
+    ax[0].set_title(r'Real $(J_{\phi})$',fontsize=22)
+    ax[0].set_xlabel(r'${\rm R\,(m)}$',fontsize=20)
+    ax[0].set_ylabel(r'${\rm Z\,(m)}$',fontsize=20)
+    cbar=plt.colorbar(CS,pad=0.01)
+    tick_locator = ticker.MaxNLocator(nbins=5)
+    cbar.locator = tick_locator
+    cbar.ax.tick_params(labelsize=18)
+    cbar.ax.yaxis.set_offset_position('left')
+    cbar.ax.yaxis.offsetText.set_fontsize(16)
+    cbar.formatter.set_powerlimits((0,0))
+    cbar.update_ticks()
 
-CS=ax[1].contourf(R[files[0]],Z[files[0]],J0T[files[0]],levels=lev,cmap=cm.seismic)
+    CS=ax[1].contourf(R[files[0]],Z[files[0]],J0T[files[0]],levels=lev,cmap=cm.seismic)
 
-QS=ax[1].contour(R[files[0]],Z[files[0]],qcon1,levels=qlev,colors='k',linestyles='solid')
+    QS=ax[1].contour(R[files[0]],Z[files[0]],qcon1,levels=qlev,colors='k',linestyles='solid')
 
-#ax[1].clabel(QS,qlev,inline=1,fmt=fmt,manual=manual_locations,inline_spacing=15)
+    ax[1].clabel(QS,qlev,inline=1,fmt=fmt,manual=manual_locations,inline_spacing=15)
 
-ax[1].set_aspect('equal')
+    ax[1].set_aspect('equal')
 
-plt.setp(ax[1].get_xticklabels(), fontsize=18)
-plt.setp(ax[1].get_yticklabels(), fontsize=18)
-#plt.setp(ax.get_yticklabels(), fontsize=12)
-#ax.set_xlabel('$\sqrt{\psi} $',fontsize=30)
-#ax.set_ylabel('$q $',fontsize=30,rotation='horizontal')
-ax[1].set_title(r'Real $(J_{\phi})$',fontsize=22)
-ax[1].set_xlabel(r'${\rm R\,(m)}$',fontsize=20)
-#ax[1].set_ylabel(r'${\rm Z\,(m)}$',fontsize=20)
-#cbar=plt.colorbar(CS,pad=0.01,format="%0.000f")
-#cbar=plt.colorbar(CS,pad=0.01)
-#tick_locator = ticker.MaxNLocator(nbins=5)
-#cbar.locator = tick_locator
-#cbar.ax.tick_params(labelsize=18)
-#cbar.ax.yaxis.set_offset_position('left')
-#cbar.ax.yaxis.offsetText.set_fontsize(16)
-#cbar.formatter.set_powerlimits((0,0))
-#cbar.update_ticks()
+    plt.setp(ax[1].get_xticklabels(), fontsize=18)
+    plt.setp(ax[1].get_yticklabels(), fontsize=18)
+    ax[1].set_title(r'Real $(J_{\phi})$',fontsize=22)
+    ax[1].set_xlabel(r'${\rm R\,(m)}$',fontsize=20)
 
-plt.savefig('xy_J0T.png',bbox_inches='tight')                                
+    plt.savefig('xy_J0T.png',bbox_inches='tight')                                
 
-fig,ax=plt.subplots(2,1,figsize=(5,10),sharex=True) 
+    fig,ax=plt.subplots(2,1,figsize=(5,10),sharex=True) 
 
-plt.setp(ax[0].get_xticklabels(), fontsize=16)
-plt.setp(ax[0].get_yticklabels(), fontsize=16)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax[0].plot(R[files[0]][:,j],-J0T[files[0]][:,j],c='red',lw=3,label=r'With SOL')
-  ax[0].plot(R[files[0]][:,j],-J0T[files[0]][:,j],c='blue',lw=3,label=r'Without SOL')
-    
-  jj=jj+1
+    plt.setp(ax[0].get_xticklabels(), fontsize=16)
+    plt.setp(ax[0].get_yticklabels(), fontsize=16)
 
-ax[0].set_xlim(2.23,2.25)
-ax[0].set_ylim(-10000,80000)
+    jj=0
+    for j in slicesy:
+      ax[0].plot(R[files[0]][:,j],-J0T[files[0]][:,j],c='red',lw=3,label=r'With SOL')
+      ax[0].plot(R[files[0]][:,j],-J0T[files[0]][:,j],c='blue',lw=3,label=r'Without SOL')
+        
+      jj=jj+1
 
-ax[0].yaxis.major.formatter._useMathText = True
-ax[0].ticklabel_format(axis='y', style='sci', scilimits=(-2,-2))
-ax[0].yaxis.offsetText.set_fontsize(16)
+    ax[0].set_xlim(2.23,2.25)
+    ax[0].set_ylim(-10000,80000)
 
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax[0].set_ylabel(r'$J_{0,\phi}\,({\rm A/m^2})$',fontsize=18)
-#ax[0].set_xlabel(r'$R\,({\rm m})$',fontsize=18)
+    ax[0].yaxis.major.formatter._useMathText = True
+    ax[0].ticklabel_format(axis='y', style='sci', scilimits=(-2,-2))
+    ax[0].yaxis.offsetText.set_fontsize(16)
 
-plt.legend(loc=1,fontsize=14)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax[0].set_ylabel(r'$J_{0,\phi}\,({\rm A/m^2})$',fontsize=18)
+    #ax[0].set_xlabel(r'$R\,({\rm m})$',fontsize=18)
 
-plt.setp(ax[1].get_xticklabels(), fontsize=16)
-plt.setp(ax[1].get_yticklabels(), fontsize=16)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax[1].plot(R[files[0]][:,j],P0[files[0]][:,j],c='red',lw=3,label=r'With SOL')
-  ax[1].plot(R[files[0]][:,j],P0[files[0]][:,j],c='blue',lw=3,label=r'Without SOL')
-    
-  jj=jj+1
+    plt.legend(loc=1,fontsize=14)
 
-ax[1].set_xlim(2.23,2.25)
-ax[1].set_ylim(0,750)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax[1].set_ylabel(r'$P_0\,({\rm Pa})$',fontsize=18)
-ax[1].set_xlabel(r'$R\,({\rm m})$',fontsize=18)
+    plt.setp(ax[1].get_xticklabels(), fontsize=16)
+    plt.setp(ax[1].get_yticklabels(), fontsize=16)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax[1].plot(R[files[0]][:,j],P0[files[0]][:,j],c='red',lw=3,label=r'With SOL')
+      ax[1].plot(R[files[0]][:,j],P0[files[0]][:,j],c='blue',lw=3,label=r'Without SOL')
+        
+      jj=jj+1
 
-plt.legend(loc=1,fontsize=14)
+    ax[1].set_xlim(2.23,2.25)
+    ax[1].set_ylim(0,750)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax[1].set_ylabel(r'$P_0\,({\rm Pa})$',fontsize=18)
+    ax[1].set_xlabel(r'$R\,({\rm m})$',fontsize=18)
 
-plt.savefig('xy_P0compare.png',bbox_inches='tight')  
+    plt.legend(loc=1,fontsize=14)
 
-fig=plt.figure(figsize=(12,12))
+    plt.savefig('xy_P0compare.png',bbox_inches='tight')  
 
-ax=fig.add_subplot(431)
-plt.title(r'$B_R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    fig=plt.figure(figsize=(12,12))
 
-ax=fig.add_subplot(432)
-plt.title(r'$B_Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(431)
+    plt.title(r'$B_R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(433)
-plt.title(r'$B_\phi$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_\phi$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(432)
+    plt.title(r'$B_Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(434)
-plt.title(r'$B_R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    ax=fig.add_subplot(433)
+    plt.title(r'$B_\phi$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_\phi$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BRi[files[0]][:,j],label=r'$B_R$')
+    ax=fig.add_subplot(434)
+    plt.title(r'$B_R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
 
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BRi[files[0]][:,j],label=r'$B_R$')
 
-ax=fig.add_subplot(435)
-plt.title(r'$B_Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BZi[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(436)
-plt.title(r'$B_\phi$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BTi[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_\phi$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(435)
+    plt.title(r'$B_Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BZi[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-plt.tight_layout()
-filename=files[0].split('.')
-plt.savefig(filename[0]+"_B1_findex.png",bbox_inches='tight')                                                                                                
-                                                                                                                                                                                                                                                                                                
-fig=plt.figure(figsize=(12,12))
+    ax=fig.add_subplot(436)
+    plt.title(r'$B_\phi$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BTi[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_\phi$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(431)
-plt.title(r'$B0R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],B0R[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B0R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    plt.tight_layout()
+    filename=files[0].split('.')
+    plt.savefig(filename[0]+"_B1_findex.png",bbox_inches='tight')                                                                                                
+                                                                                                                                                                                                                                                                                                    
+    fig=plt.figure(figsize=(12,12))
 
-ax=fig.add_subplot(432)
-plt.title(r'$B0Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],B0Z[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B0Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(431)
+    plt.title(r'$B0R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],B0R[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B0R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(433)
-plt.title(r'$B0T$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],B0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B0T$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(432)
+    plt.title(r'$B0Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],B0Z[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B0Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(434)
-plt.title(r'$V0T$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],V0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$V0T$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(433)
+    plt.title(r'$B0T$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],B0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B0T$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(435)
-plt.title(r'$P0$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],P0[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$P0$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(434)
+    plt.title(r'$V0T$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],V0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$V0T$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(436)
-plt.title(r'$n0$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],n0[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$n0$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(435)
+    plt.title(r'$P0$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],P0[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$P0$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(437)
-plt.title(r'$J0R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],J0R[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J0R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(436)
+    plt.title(r'$n0$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],n0[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$n0$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(438)
-plt.title(r'$J0Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],J0Z[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J0Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(437)
+    plt.title(r'$J0R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],J0R[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J0R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(439)
-plt.title(r'$J0T$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],J0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J0T$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(438)
+    plt.title(r'$J0Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],J0Z[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J0Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-plt.tight_layout()
-filename=files[0].split('.')
-plt.savefig(filename[0]+"_eq_findex.png",bbox_inches='tight')
+    ax=fig.add_subplot(439)
+    plt.title(r'$J0T$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],J0T[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J0T$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
+
+    plt.tight_layout()
+    filename=files[0].split('.')
+    plt.savefig(filename[0]+"_eq_findex.png",bbox_inches='tight')
 
 
-fig=plt.figure(figsize=(12,12))
-#plt.subplots_adjust(left=0.10, bottom=0.12, right=0.95, top=0.92, wspace=0.175)
-ax=fig.add_subplot(431)
-plt.title(r'$B_R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
+    fig=plt.figure(figsize=(12,12))
+    #plt.subplots_adjust(left=0.10, bottom=0.12, right=0.95, top=0.92, wspace=0.175)
+    ax=fig.add_subplot(431)
+    plt.title(r'$B_R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
 
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(432)
-plt.title(r'$B_Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(432)
+    plt.title(r'$B_Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(433)
-plt.title(r'$B_\phi$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],BTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$B_\phi$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(433)
+    plt.title(r'$B_\phi$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],BTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$B_\phi$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
 
 
-ax=fig.add_subplot(434)
-plt.title(r'$V_R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],VRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$V_R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(434)
+    plt.title(r'$V_R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],VRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$V_R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(435)
-plt.title(r'$V_Z$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],VZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$V_Z$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(435)
+    plt.title(r'$V_Z$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],VZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$V_Z$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(436)
-plt.title(r'$V_\phi$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],VTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
+    ax=fig.add_subplot(436)
+    plt.title(r'$V_\phi$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],VTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
 
-sm = cm.ScalarMappable(cmap=cm.rainbow, norm=plt.Normalize(vmin=min(slicesy), vmax=max(slicesy)))
-# fake up the array of the scalar mappable. Urgh...
-sm._A = []
-cx=plt.colorbar(sm)
-cx.set_ticks(slicesy)
+    sm = cm.ScalarMappable(cmap=cm.rainbow, norm=plt.Normalize(vmin=min(slicesy), vmax=max(slicesy)))
+    # fake up the array of the scalar mappable. Urgh...
+    sm._A = []
+    cx=plt.colorbar(sm)
+    cx.set_ticks(slicesy)
 
-ax.set_ylabel(r'$V_\phi$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax.set_ylabel(r'$V_\phi$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(437)
-plt.title(r'$J_R$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],JRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J_R$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(437)
+    plt.title(r'$J_R$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],JRr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J_R$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(438)
-plt.title(r'$J_\theta$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],JZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J_\theta$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(438)
+    plt.title(r'$J_\theta$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],JZr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J_\theta$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(439)
-plt.title(r'$J_\phi$ v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],JTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'$J_\phi$',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(439)
+    plt.title(r'$J_\phi$ v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],JTr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'$J_\phi$',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(4,3,10)
-plt.title(r'Real($P$) v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],Pr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'Real($P$)',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(4,3,10)
+    plt.title(r'Real($P$) v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],Pr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'Real($P$)',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(4,3,11)
-plt.title(r'Real($T_i$) v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],TIr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'Real($T_i$)',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
+    ax=fig.add_subplot(4,3,11)
+    plt.title(r'Real($T_i$) v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],TIr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'Real($T_i$)',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
 
-ax=fig.add_subplot(4,3,12)
-plt.title(r'Real($n$) v. $R$',fontsize=12)
-plt.setp(ax.get_xticklabels(), fontsize=8)
-plt.setp(ax.get_yticklabels(), fontsize=8)
-#sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
-jj=0
-for j in slicesy:
-  ax.plot(R[files[0]][:,j],Nr[files[0]][:,j],c=color[jj],label=r'$B_R$')
-  jj=jj+1
-#ax.set_xlim(0.6,0.8)
-#ax.set_ylim(-1,0.25)
-#ax.legend(loc=2,prop={'size':8})
-#plt.axvline(x=rs, color='k')
-ax.set_ylabel(r'Real($n$)',fontsize=12)
-ax.set_xlabel(r'$r$',fontsize=12)
-plt.tight_layout()
-#plt.show()
-filename=files[0].split('.')
-if len(filename)==3:
-  plt.savefig(filename[0]+'_findex.'+filename[1]+".png",bbox_inches='tight')
-else:
-  plt.savefig(filename[0]+"_findex.png",bbox_inches='tight')
+    ax=fig.add_subplot(4,3,12)
+    plt.title(r'Real($n$) v. $R$',fontsize=12)
+    plt.setp(ax.get_xticklabels(), fontsize=8)
+    plt.setp(ax.get_yticklabels(), fontsize=8)
+    #sca=np.amax([abs(br1[:,13]),abs(bpi1[:,13]),abs(bbi1[:,13])])
+    jj=0
+    for j in slicesy:
+      ax.plot(R[files[0]][:,j],Nr[files[0]][:,j],c=color[jj],label=r'$B_R$')
+      jj=jj+1
+    #ax.set_xlim(0.6,0.8)
+    #ax.set_ylim(-1,0.25)
+    #ax.legend(loc=2,prop={'size':8})
+    #plt.axvline(x=rs, color='k')
+    ax.set_ylabel(r'Real($n$)',fontsize=12)
+    ax.set_xlabel(r'$r$',fontsize=12)
+    plt.tight_layout()
+    #plt.show()
+    filename=files[0].split('.')
+    if len(filename)==3:
+      plt.savefig(filename[0]+'_findex.'+filename[1]+".png",bbox_inches='tight')
+    else:
+      plt.savefig(filename[0]+"_findex.png",bbox_inches='tight')
 
-plt.show()
+    plt.show()
 
 

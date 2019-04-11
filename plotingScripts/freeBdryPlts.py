@@ -4,8 +4,12 @@ import os
 
 homeDir = os.environ['HOME']
 
-fname=homeDir + "SCRATCH/NTM_TESTING/18102201/fbdry.txt"
+fname=homeDir + "/SCRATCH/d4d/poster/fbdry.txt"
 data = np.loadtxt(fname)
+
+title = "Shape Error (Controller not reset)"
+ymin=1.0e-4
+ymax=1
 
 ncoils = int(max(data[:,1]))
 its = data.shape[0]/ncoils
@@ -28,20 +32,25 @@ for ii in range(0, data.shape[0], ncoils):
 ict=ic0+ic
 
 
-maxplt = 100                
+
+maxplt = step.size                
 fig, ax1 = plt.subplots()
 ax1.plot(step[0:maxplt], chisq[0:maxplt]/100, 'b-')
+#ax1.vlines(25,ymin,ymax,linestyle='dotted')
+#ax1.vlines(50,ymin,ymax,linestyle='dotted')
+#ax1.vlines(75,ymin,ymax,linestyle='dotted')
 ax1.set_xlabel(r'GS Iteration',fontsize=16)
 #ax1.axes.set_xlim(left=0,right=1)
 
 # Make the y-axis label, ticks and tick labels match the line color.
-ax1.set_ylabel(r'$\chi^2$',rotation=90,fontsize=16)
+ax1.set_ylabel(r'$\chi^2$ Error',rotation=90,fontsize=16)
+ax1.axes.set_ylim(ymin,ymax)
 #ax1.axes.set_ylim(0,1)
 plt.yscale("log")
 ax1.tick_params(axis='both', which='major', labelsize=14)
 #plt.locator_params(axis='y', nbins=6)
 fig.tight_layout()
-
+plt.title(title)
 plt.show()      
 
 #inital current

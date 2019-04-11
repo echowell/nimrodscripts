@@ -7,7 +7,7 @@ import math as m
 import os
 
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2/"
+relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_nimfl2/"
 fileName = "nimfl0000000.dat"
 plot3Dfile = "nimfl000000.3D"
 

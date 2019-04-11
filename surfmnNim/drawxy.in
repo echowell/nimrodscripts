@@ -1,0 +1,72 @@
+Type (G=Graph, C=Contour):	G
+
+filename(s)
+xy_slice.bin
+
+graph title:	Perturbed Fields
+
+variable names
+0	ix/mx
+1	iy/my
+2	R
+3	Z
+4	B0R
+5	B0Z
+6	B0Phi
+7	J0R
+8	J0Z
+9	J0Phi
+10	V0R
+11	V0Z
+12	V0Phi
+13	P0
+14	PE0
+15	n0
+16	diff shape
+17	BR
+18	BZ
+19	BP
+20	BR
+21	BZ
+22	BP
+23	JR
+24	JZ
+25	JP
+26	JR
+27	JZ
+28	JP
+29	VR
+30	VZ
+31	VP
+32	VR
+33	VZ
+34	VP
+35	P
+36	P
+37	PE
+38	PE
+39	n
+40	n
+41	conc
+42	conc
+43	Te
+44	Te
+45	Ti
+46	Ti
+
+ix	iy	options		title
+0	17	-f0 -s1		"Re Br vs. i
+0	18	-f0 -s1		"Im Br vs. i
+0	29	-f0 -s1		"Re Vr vs. i
+0	23	-f0 -s1		"Re Jr vs. i
+0	35	-f0 -s1		"Re P vs. i
+0	18	-f0 -s1		"Re Bz vs. i
+0	30	-f0 -s1		"Re Vz vs. i
+0	24	-f0 -s1		"Re Jz vs. i
+0	39	-f0 -s1		"nd vs. i
+0	19	-f0 -s1		"Re Bphi vs. i
+0	31	-f0 -s1		"Re Vphi vs. i
+0	25	-f0 -s1		"Re Jphi vs. i
+0	45	-f0 -s1		"Re Ti vs. i
+0	43	-f0 -s1		"Re Te vs. i
+;0	16	-f0 -s1		"diff shape

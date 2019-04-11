@@ -78,26 +78,26 @@ def sortData(rawData,pssData):
             hitIndex=0
             lastLine=rawData[ii,3]
         prosData[lineIndex,hitIndex,0]=rzToS(rawData[ii,0],rawData[ii,1])
-        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)
+        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)+180
+        if prosData[lineIndex,hitIndex,1]>360:
+          prosData[lineIndex,hitIndex,1]=prosData[lineIndex,hitIndex,1]-360
         prosData[lineIndex,hitIndex,2]=pssDict[lastLine]
     return prosData
     
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi4/S7Pr1e2/"
+relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_nimfl2/"
 fileName = "surfcross0000000.txt"
 pssFileName = "nimfl0000000.dat"
 fullFileName = homeDir+relDir+fileName
 pssFullFileName = homeDir+relDir+pssFileName
-plotTitle = "Vacuum Magnetic Footpoint with n=0-21 no sol"
+plotTitle = "Vacuum Magnetic Footprint"
 
 pltt0=0.
 plttf=360.
 plts0=1.15
 pltsf=1.3
-plts0=0
-pltsf=3
-minLength=10
-vMax=1e4
+minLength=80
+vMax=1e3
 rawData = np.loadtxt(fullFileName)
 pssData = np.loadtxt(pssFullFileName)
 prosData = sortData(rawData,pssData)
@@ -105,8 +105,9 @@ prosData = sortData(rawData,pssData)
 
 for ii in range(prosData.shape[0]):
     if prosData[ii,0,2]<minLength: continue
-    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=np.log10(prosData[ii,:,2]),cmap='tab20c',vmin=np.log10(minLength),vmax=np.log10(vMax),s=1)
-
+    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=prosData[ii,:,2],cmap='tab20c',vmin=minLength,vmax=vMax,s=1)
+plt.vlines(75,plts0,pltsf,linestyles='dotted',linewidths=1)
+plt.text(60,1.22, "Diagnostic View",fontsize=12,rotation="vertical")
 plt.axis([pltt0,plttf,plts0,pltsf])
 plt.xlabel('Toroidal Angle (deg)')
 plt.ylabel('Distance along wall (m)')

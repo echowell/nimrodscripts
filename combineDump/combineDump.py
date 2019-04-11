@@ -1,21 +1,12 @@
 #!/usr/local/bin/python3
 #
 # Input files:
-#     dumpeq.h5 - hdf5 dump file with equilibrium
-#     dumppert.h5 - hdf5 dump file with perturbations
+#     firstDump - hdf5 dump file with equilibrium and first nk perturbation
+#     secondDump - hdf5 dump file with last nk perturbation
 # Ouput file:
-#     dumpgll.00000.h5 -hdf5 dumpe fle that will use the 
-#     equilibrium profiles form dumpeq.h5 and perturbations
-#     dumppert.h5. The dumpgll.00000.h5 will have the same
-#     keff and the same zperiod as dumpeq.h5.
-#
-# nList is a dictionary to set a correspondance between
-# records for different mode numbers in dumpeq.h5 and 
-# dumppert.h5. The key values are for the records of 
-# different mode numbers in dumpeq.h5. The values are
-# for the records in dumppert.h5 that will be used to
-# set the perturbations in dumpgll.00000.h5.
-#
+#     finalDump -hdf5 dump file that has combines the perturbed fourier nmodes
+#     from each dump file
+#     I assume that the is no overlap in keff
 import h5py
 from itertools import product
 import numpy as np
@@ -29,13 +20,9 @@ vsList = [ 'imconc', 'imnd', 'impe', 'impr', 'imte', 'imti', \
 
 basePath = '/home/research/ehowell/SCRATCH/166439/03300_q104_reorder_combine/vac/'
 
-firstDump = basePath+'n0/dumpglln0.h5'
-secondDump = basePath+'n1/dumpglln1.h5'
-finalDump = basePath+'n0-5/dumpglln01.h5'
-
-firstDump = basePath+'n0-5/dumpglln01.h5'
-secondDump = basePath+'n2/dumpglln2.h5'
-finalDump = basePath+'n0-5/dumpglln02.h5'
+firstDump = basePath+'n0-5/dumpglln04.h5'
+secondDump = basePath+'n5/dumpglln5.h5'
+finalDump = basePath+'n0-5/dumpglln05.h5'
 
 newStep=0
 newTime=0.0
