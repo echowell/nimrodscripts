@@ -18,12 +18,14 @@ class TripClass:
     brPhase = np.zeros(1,dtype=np.complex_)
     bzPhase = np.zeros(1,dtype=np.complex_)
     shiftindex=0
-    def __init__ (self,rzFile, aFile, bFile, shiftindex):
+    complexConj=False
+    def __init__ (self,rzFile, aFile, bFile, shiftindex, complexConj):
         ''' Initialize TripClass '''
         self.probeRzFile = rzFile
         self.probeBFile = bFile
         self.probeAFile = aFile
         self.shiftindex = shiftindex
+        self.complexConj = complexConj
     def readRz (self):
         ''' Read probeRz File as Save data '''
         #todo
@@ -81,14 +83,20 @@ class TripClass:
             self.bzReal[:,ii] = self.bData[startIndex:startIndex+self.npoints,5]
             self.btReal[:,ii] = self.bData[startIndex:startIndex+self.npoints,3]
         # i don't know if I need to flip phi or change the sign of Bphi
-        # self.flipPhi()
+        #self.flipPhi()
         # to be consistant with nimrod I should use the forward fft when going
         # from real space to fourier space, and I also need to devide by nphi
         # numpy does not have an option for normalizing the FFT by n,
         # it can only do sqrt(N) normalization or normalize the IFFT by N.
-        self.brPhase = np.fft.fft(self.brReal,axis=1)/(float(self.nphi))
-        self.bzPhase = np.fft.fft(self.bzReal,axis=1)/(float(self.nphi))
-        self.btPhase = np.fft.fft(self.btReal,axis=1)/(float(self.nphi))
+        if self.complexConj:
+          self.brPhase = np.fft.ifft(self.brReal,axis=1)
+          self.bzPhase = np.fft.ifft(self.bzReal,axis=1)
+          self.btPhase = np.fft.ifft(self.btReal,axis=1)
+        else:
+          self.brPhase = np.fft.fft(self.brReal,axis=1)/(float(self.nphi))
+          self.bzPhase = np.fft.fft(self.bzReal,axis=1)/(float(self.nphi))
+          self.btPhase = np.fft.fft(self.btReal,axis=1)/(float(self.nphi))
+        
     def writeNimrodBext(self,path,baseFileName,fileExt):
         if (self.nphi % 2 == 0): #even
             maxnphi = int(self.nphi/2)
