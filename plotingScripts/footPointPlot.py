@@ -78,26 +78,66 @@ def sortData(rawData,pssData):
             hitIndex=0
             lastLine=rawData[ii,3]
         prosData[lineIndex,hitIndex,0]=rzToS(rawData[ii,0],rawData[ii,1])
-        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)+180
+#        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)+180
+#        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)
+# Fix add 30 to be consistent
+        prosData[lineIndex,hitIndex,1]=rawData[ii,2]*360/(2*np.pi)+30
         if prosData[lineIndex,hitIndex,1]>360:
           prosData[lineIndex,hitIndex,1]=prosData[lineIndex,hitIndex,1]-360
         prosData[lineIndex,hitIndex,2]=pssDict[lastLine]
     return prosData
-    
+
+plasma_model = "nonlinear"
+  
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_nimfl2/"
-fileName = "surfcross0000000.txt"
-pssFileName = "nimfl0000000.dat"
+relDir = "/SCRATCH/166439/03300_vac_eq/normal_rmp_vac5_fpsep2/"
+relDir = "/SCRATCH/166439/03300_2_equilbria/19091201_vac_lphi5_fp/"
+relDir = "/SCRATCH/166439/03300_2_fl//19091702/lphi5_nolinear_restart/58000/"
+#relDir = "/SCRATCH/166439/03300_2_equilbria/19091702_fl/linear/lphi5_2/50000/"
+#relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_rmp_cfl_b/" +dump_num +"/"
+#relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_nolinear_restart/" +dump_num +"/"
+#relDir = "/SCRATCH/166439/03300/normal_rmp_vac5_fpsep2/"
+#relDir = "/SCRATCH/166439/03300_vac_eq/complexconj_rmp_vac_fpsep2/"
+fileName = "surfcross0058000.txt"
+pssFileName = "nimfl0058000.dat"
+#fileName = "surfcross0110000.txt"
+#pssFileName = "nimfl0110000.dat"
+
+
+if plasma_model == "vacuum":
+  plotTitle = "Vacuum Response Footprint"
+  relDir = "/SCRATCH/166439/03300_2_equilbria/19091201_vac_lphi5_fp_deg50/"
+  dump_num = "00100"
+elif plasma_model == "linear":
+  plotTitle = "Linear Response Footprint"
+  relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_rmp_cfl_b/200000_50deg/"
+  dump_num="200000"
+elif plasma_model =="nonlinear":
+  plotTitle = "Nonlinear Response Footprint"
+  relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_nolinear_fresh/32000/"
+  dump_num = "32000"
+else:
+  plotTitle = "Vacuum Response Footprint"
+  dump_num="58000"  
+
+if len(dump_num)==6:
+  fileName = "surfcross0"+dump_num+".txt"
+  pssFileName = "nimfl0"+dump_num+".dat"
+elif len(dump_num)==5:
+  fileName = "surfcross00"+dump_num+".txt"
+  pssFileName = "nimfl00"+dump_num+".dat"
+
+#fileName = "surfcross0000100.txt"
+#pssFileName = "nimfl0000100.dat"
 fullFileName = homeDir+relDir+fileName
 pssFullFileName = homeDir+relDir+pssFileName
-plotTitle = "Vacuum Magnetic Footprint"
 
 pltt0=0.
 plttf=360.
 plts0=1.15
 pltsf=1.3
-minLength=80
-vMax=1e3
+minLength=70.
+vMax=1e5
 rawData = np.loadtxt(fullFileName)
 pssData = np.loadtxt(pssFullFileName)
 prosData = sortData(rawData,pssData)
@@ -105,9 +145,10 @@ prosData = sortData(rawData,pssData)
 
 for ii in range(prosData.shape[0]):
     if prosData[ii,0,2]<minLength: continue
-    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=prosData[ii,:,2],cmap='tab20c',vmin=minLength,vmax=vMax,s=1)
-plt.vlines(75,plts0,pltsf,linestyles='dotted',linewidths=1)
-plt.text(60,1.22, "Diagnostic View",fontsize=12,rotation="vertical")
+    plt.scatter(prosData[ii,:,1],prosData[ii,:,0],c=np.log10(prosData[ii,:,2]),cmap='prism',vmin=np.log10(minLength),vmax=np.log10(vMax),s=1)
+plt.vlines(80,plts0,pltsf,linestyles='dotted',linewidths=1)
+plt.hlines(1.285,0,360,linestyles='-.',linewidths=1)
+plt.text(150,1.2875, "Inner strike point",fontsize=12)
 plt.axis([pltt0,plttf,plts0,pltsf])
 plt.xlabel('Toroidal Angle (deg)')
 plt.ylabel('Distance along wall (m)')
