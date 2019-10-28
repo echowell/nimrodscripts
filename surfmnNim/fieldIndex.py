@@ -24,7 +24,7 @@ plotfields=0
 # list of file names to be read
 files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/xy_slice01.bin']
 files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_surfmn/xy_slice01.bin']
-files=['/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/vac_surfmn/xy_slice01.bin']
+files=['/home/research/ehowell/SCRATCH/166439/03300_q104_flowtesting/n1_run1/orginal_exb/300000/xy_slice.bin']
 #,'xy_slice17.bin','xy_slice260.bin']
 #files=['xy_slice15000.bin']
 # slicesy is between 0 and my*pd for all yslices
@@ -242,13 +242,14 @@ for m in range(len(files)):
 
 qcon1=np.zeros((npx[files[findex]],npy[files[findex]]))
 #fgfile='fgprofs.bin'
-fgfile='/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/fgprofs.bin'
+fgfile='/home/research/ehowell/SCRATCH/166439/03300_q104_flowtesting/orginal_exb/fgprofs.bin'
 
 
 for j in range(npy[files[0]]):
-    for i in range(qg[fgfile].size):    
-        qcon1[i+1,j]=qg[fgfile][i]
-    qcon1[i+2,j]=-5.
+  for i in range(qg[fgfile].size):    
+    print(j,i)
+    qcon1[i+1,j]=qg[fgfile][i]
+  qcon1[i+2,j]=-5.
         
 
 clines=301

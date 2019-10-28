@@ -7,9 +7,12 @@ import math as m
 import os
 
 homeDir = os.environ['HOME']
-relDir = "/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_nimfl2/"
-fileName = "nimfl0000000.dat"
-plot3Dfile = "nimfl000000.3D"
+relDir = "/SCRATCH/166439/03300_2_equilbria/19091201_vac_lphi5_fp_deg50/"
+#relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_rmp_cfl_b/200000_50deg/"
+#relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_nolinear_restart/58000_50deg/"
+relDir = "/SCRATCH/166439/03300_2_fl/19091702/lphi5_nolinear_fresh/26000/"
+fileName = "nimfl0026000.dat"
+plot3Dfile = "nimfl0026000.3D"
 
 fullFile = homeDir+relDir+fileName
 fullOutFile = homeDir+relDir+plot3Dfile

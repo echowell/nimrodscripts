@@ -9,11 +9,13 @@ import tripClass as tc
 
 homeDir = os.environ['HOME']
 
-readDirectory = homeDir + "/SCRATCH/nimruns/echowell_runs/heatwidthscaling/166439/03300/EF_GRID_18121801/"
+readDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19091201_probeg/"
 
 #writeDirectory = homeDir + "/SCRATCH/testingjunk/"
-writeDirectory = homeDir + "/SCRATCH/166439/03300_vac_eq/normal_rmp/"
-writeDirectory = homeDir + "/SCRATCH/166439/03300_vac_eq/complexconj_rmp/"
+#writeDirectory = homeDir + "/SCRATCH/166439/03300_vac_eq/normal_rmp/"
+writeDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19091201_probeg/"
+readDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19100401_probe_gb/"
+writeDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19100401_probe_gb/"
 
 shotNumber = "166439"
 timeSlice = "03300"
@@ -29,7 +31,11 @@ rzProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + rzFileSuffix
 aProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + aFileSuffix
 bProbeFile = readDirectory + shotNumber + "." + timeSlice + "." + bFileSuffix
 
-indexShift=5
+rzProbeFile = readDirectory + rzFileSuffix
+aProbeFile = readDirectory + aFileSuffix
+bProbeFile = readDirectory + bFileSuffix
+
+indexShift=0 #was 5
 complexCon = True
 
 tripData = tc.TripClass(rzProbeFile,aProbeFile,bProbeFile,indexShift,complexCon)

@@ -19,11 +19,11 @@ solDir = "/SCRATCH/166439/03300_vac_eq/complexconj_rmp/"
 solFileName = "sol.grn"
 solCon = 1 # This is the seperatrix
 
-writeFileName = "start_positions.dat_sep1"
+writeFileName = "start_positions.dat_sep2"
 writeDir = "/SCRATCH/166439/03300_vac_eq/start_pos_files/"
 
 nPoints = 3000
-sigmaDist = 0.05
+sigmaDist = 0.005
 phiZero = 0.0
 randomPhi = True # Ture
 

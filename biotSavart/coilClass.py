@@ -4,6 +4,8 @@
 
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class coil:
     coilType=''
@@ -15,25 +17,40 @@ class coil:
         self.current=current
         self.segments=segment
         self.xyz=np.zeros([3,self.segments+1])
-    def planarCoil(self,x0,y0,z0,r,t1,t2):
+    def planarCoil(self,x0,y0,z0,r,tx,ty,tz):
     #Initalize an coil around r0, with radius r
     #    t1 and t2 are the rotation angles are the x0 and y0 axis
-        self.coilType='planar'
-        cost1=np.cos(t1)
-        cost2=np.cos(t2)
-        sint1=np.sin(t1)
-        sint2=np.sin(t2)
-        rotMat = np.zeros([3,3])
-        rotMat[0,0] = cost2
-        rotMat[0,1] = sint1 * sint2
-        rotMat[0,2] = cost1 * sint2
-        rotMat[1,0] = 0.0
-        rotMat[1,1] = cost1
-        rotMat[1,2] = -sint1
-        rotMat[2,0] = -sint2
-        rotMat[2,1] = sint1 * cost2
-        rotMat[2,2] = cost1 * cost2
 
+        self.coilType='planar'
+        costx=np.cos(tx)
+        costy=np.cos(ty)
+        costz=np.cos(tz)
+        sintx=np.sin(tx)
+        sinty=np.sin(ty)
+        sintz=np.sin(tz)
+        rotxMat = np.zeros([3,3])
+        rotyMat = np.zeros([3,3])
+        rotzMat = np.zeros([3,3])
+        
+        rotxMat[0,0] = 1.0
+        rotxMat[1,1] = costx
+        rotxMat[1,2] = -sintx
+        rotxMat[2,1] = sintx
+        rotxMat[2,2] = costx
+
+        rotyMat[0,0] = costy
+        rotyMat[0,2] = sinty
+        rotyMat[1,1] = 1.0
+        rotyMat[2,0] = -sinty
+        rotyMat[2,2] = costy
+
+        rotzMat[0,0] = costz
+        rotzMat[0,1] = -sintz
+        rotzMat[1,0] = sintz
+        rotzMat[1,1] = costz
+        rotzMat[2,2] = 1.0
+
+        rotMat = np.matmul(rotzMat,np.matmul(rotyMat,rotxMat))
         thisXYZ=np.zeros([3])
         theta=np.linspace(0,2*np.pi,num=self.segments+1)
         for iT, thisT in enumerate(theta):
@@ -82,3 +99,8 @@ class coil:
             self.xyz[1,ii+3*segsPerSec]=r0 * np.sin(phiStart)
             self.xyz[2,ii+3*segsPerSec]=z[ii]
         self.xyz[:,self.segments]=self.xyz[:,0]
+    def plot_coil(self,axis):
+      axis.plot(self.xyz[0,:],self.xyz[1,:],self.xyz[2,:])
+
+    def plot_2D_coil(self,axis,coilcolor):
+      axis.plot(self.xyz[0,:],self.xyz[2,:],color=coilcolor)

@@ -14,10 +14,10 @@ homeDir = os.environ['HOME']
 ################################################################################
 #  User defined input
 ################################################################################
-fileName = "start_positions.dat"
+fileName = "start_positions.dat_1"
 writeDirectory = pwd
-writeDirectory = homeDir + "/SCRATCH//166439/footpoint_03300_q104/lphi5/S7Pr1e2_nimfl2"
-nPoints = 3000
+writeDirectory = homeDir + "/SCRATCH/174446_novac_debug/nonlin1_eq26_rmp_nimfl/179"
+nPoints = 2000
 geom = 'd3dlower'
 phiZero = 0.0
 randomPhi = True # Ture

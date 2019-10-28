@@ -9,7 +9,7 @@ from fieldIndex import files,R,Z,BRr,BRi,B0R,B0Z,B0T,qcon1,J0T,pd
 from fgProfs import rho,qg,irho2,irho3,irho4
 
 
-fgfile='/home/research/ehowell/SCRATCH/166439/footpoint_03300_q104/lphi5/S7Pr1e2_surfmn/fgprofs.bin'
+fgfile='/home/research/ehowell/SCRATCH/166439/03300_q104_flowtesting/orginal_exb/fgprofs.bin'
 
 mrange=10
 

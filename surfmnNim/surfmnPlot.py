@@ -14,7 +14,7 @@ plotmag=1
 plotmag2wall=0
 bylim=9e-4
 
-savepath = "/home/research/ehowell/Documents/Talks/Sherwood2019/Sherwood2019_poster/Figures/"
+savepath = "/home/research/ehowell/SCRATCH/166439/03300_q104_flowtesting/n1_run1/orginal_exb/300000/"
 
 basename="vac1"
 nfour=1
@@ -136,7 +136,7 @@ if plotsurf2wall==1:
     
     fig,ax=plt.subplots(figsize=(10,6))
     
-    CS = ax.contourf(m,rho1[1:],np.rot90(bnmflip[xyfile,:,1:],k=-1),levels,cmap=cm.nipy_spectral)
+    CS = ax.contourf(m,rho1[1:],np.rot90(bnmflip[xyfile,:,1:],k=-1),levels,cmap=cm.nipy_spectral,levels=100)
 #    CS = ax.contourf(m,rho[fgfile],bm2,levels,cmap=cm.seismic)
     
     plt.setp(ax.get_xticklabels(), fontsize=22)

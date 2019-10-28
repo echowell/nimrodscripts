@@ -21,10 +21,10 @@ class startPosClass:
     def d3dlowerRZPhi(self):
         ''' generate a collection of rzp points for the lower d3d divertor '''
         for ii in range(self.numPoints):
-            top=-0.7
+            top=1
             bottom= -1.2
             left=1.2
-            right=1.5
+            right=2.3
             self.rzp[ii,0]=ran.uniform(left,right)
             self.rzp[ii,1]=ran.uniform(bottom,top)
             if self.randomPhi:
