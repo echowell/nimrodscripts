@@ -4,6 +4,9 @@ import h5py
 import surfmnstep
 import matplotlib.pyplot as plt
 import numpy as np
+import argparse
+import pickle
+import glob
 
 ''' This is a generic runner for surfmn. It loops over a bunch of directorys
 in the current directory, searchs for a surfmn file, and a dump file. If the
@@ -107,24 +110,45 @@ def time_hist(steplist):
 
 #  for istep in steplist:
 
-def surfmn_runner():
+def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
   ''' main runner for surfmn
       loops over all objects in a directory
       checks to see if the objects are a directory
       if so, then searches that directoy for a dump file and surfmn file'''
   steplist=[]
-  workdir=os.getcwd()
-  listobjs = os.listdir(workdir)
-  listobjs.sort()
-  for iobj in listobjs:
-    print(iobj,os.path.isdir(iobj))
-    if os.path.isdir(iobj):
-      thisdir=workdir+'/'+iobj
-      surfmn_file, dump, step, time = find_files(thisdir)
-      steplist.append(surfmnstep.SurfmnStep(surfmn_file, dump, step, time))
-  time_hist(steplist)
-  steplist[1].read_surfmn()
-  print(steplist[1].get_resonance("psi",1,-2))
+  read_new = True
+  if read_pickle:
+    pickle_list=glob.glob("pickle*")
+    pickle_list.sort()
+    if len(pickle_list)>0:
+      read_new=False
+      for iobj in pickle_list:
+        steplist.append(pickle.load(open(iobj, "rb" )))
+  if read_new:
+    workdir=os.getcwd()
+    listobjs = os.listdir(workdir)
+    listobjs.sort()
+    for iobj in listobjs:
+      if os.path.isdir(iobj):
+        thisdir=workdir+'/'+iobj
+        surfmn_file, dump, step, time = find_files(thisdir)
+        steplist.append(surfmnstep.SurfmnStep(surfmn_file, dump, step, time))
+  if show_plot:
+    time_hist(steplist)
+  if pickle_data:
+    for step in steplist:
+      if step.surfmn_data==False:
+        steplist[1].read_surfmn()
+      filename="pickle"+str(step.step).zfill(5)
+      pickle.dump(step,open(filename,'wb'))
+
+#  steplist[1].read_surfmn()
+#  print(steplist[1].get_resonance("psi",1,-2))
 
 if __name__ == "__main__":
-  surfmn_runner()
+  parser = argparse.ArgumentParser(description='Surfmn runner.')
+  parser.add_argument('--plot', action='store_true',help='shows plots')
+  parser.add_argument('--pickle', action='store_true',help='pickle data')
+  parser.add_argument('--read', '-r', action='store_true',help='read pickled data')
+  args = vars(parser.parse_args())
+  surfmn_runner(show_plot=args['plot'],pickle_data=args['pickle'],read_pickle=args['read'])
