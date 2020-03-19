@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import h5py
-import surfmnstep 
+import surfmnstep
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -13,7 +13,7 @@ then calls surfmn routines to plot the data and record the reconnected flux'''
 
 def get_dumptime(thisfile):
   ''' Open an hdf5 file and read the dump time
-      if I can't open file return None 
+      if I can't open file return None
   '''
   time=None
   with h5py.File(thisfile, 'r') as h5file:
@@ -26,7 +26,7 @@ def get_dumptime(thisfile):
 
 def find_files(thisdir):
   ''' This fuction finds the surfmn, dump files in the directory
-      input: thisdir 
+      input: thisdir
       output: surfmn filename, dumpfilename, stepnumber, step time
       the outputs return None, if a file does not exists
   '''
@@ -62,7 +62,7 @@ def find_files(thisdir):
       else:
         print(f"Multiple surfmn files in directory {thisdir}")
         raise
-  
+
   return surfmn_file, dumpfile, stepnumber, steptime
 
 def time_hist(steplist):
@@ -108,13 +108,14 @@ def time_hist(steplist):
 #  for istep in steplist:
 
 def surfmn_runner():
-  ''' main runner for surfmn 
+  ''' main runner for surfmn
       loops over all objects in a directory
-      checks to see if the objects are a directory 
+      checks to see if the objects are a directory
       if so, then searches that directoy for a dump file and surfmn file'''
   steplist=[]
   workdir=os.getcwd()
   listobjs = os.listdir(workdir)
+  listobjs.sort()
   for iobj in listobjs:
     print(iobj,os.path.isdir(iobj))
     if os.path.isdir(iobj):

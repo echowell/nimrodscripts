@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 #surfmnstep is a container class for storing data useful for analyzing surfmn
-#data 
+#data
 #
 #
 import h5py
@@ -14,7 +14,7 @@ class SurfmnStep:
   def __init__(self,surfmn_file,dumpfile,stepnumber,steptime):
     self.surfmn_file=surfmn_file
     self.dumpfile=dumpfile
-    self.step=stepnumber 
+    self.step=stepnumber
     self.time=steptime
     self.mmax=None
     self.surfmn_data=False #set to true surfmn file has been read
@@ -108,11 +108,11 @@ class SurfmnStep:
     ylabel=kwargs.get("ylabel",r'<r> [m]')#todo this should be rho
     xlabel=kwargs.get("xlabel","Poloidal Mode number m")
     fontsize=kwargs.get("fontsize",16)
-    showplot=kwargs.get("plot",showplot) #orverides showplot logic 
+    showplot=kwargs.get("plot",showplot) #orverides showplot logic
 # set up mrange()
     mrange=np.linspace(self.qmin,self.qmax)
 #create the surfmn plot
-    plt.set_cmap('nipy_spectral')    
+    plt.set_cmap('nipy_spectral')
     conf=plt.contourf(self.mr[0,:,:],self.mr[1,:,:],fmn,levels=levels,vmax=vmax)
     plt.plot(nn*mrange,self.psi_q(mrange),c='w')
     plt.title(title,fontsize=fontsize)
@@ -168,8 +168,8 @@ class SurfmnStep:
         ax.plot(self.mr[1,:,1],fmn[:,this_i], color=tc, label=mlbl)
     for iq,qq in enumerate(qlist):
       try:
-        irho = self.psi_q(qq) 
-        qlbl = f"q = {qq:.2f}" 
+        irho = self.psi_q(qq)
+        qlbl = f"q = {qq:.2f}"
         tc=colorlist[iq]
         ax.axvline(irho,ls=':',color=tc, label=qlbl)
       except:
@@ -182,7 +182,7 @@ class SurfmnStep:
     plt.tight_layout()
     if showplot:
       plt.show()
-    
+
   def get_resonance(self,field,nn,mm):
     ''' Evaluate the resonant component of a field at the given resonces'''
     if nn<1:
