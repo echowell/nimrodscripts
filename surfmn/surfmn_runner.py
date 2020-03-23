@@ -77,9 +77,10 @@ def time_hist(steplist):
   mlist=[-1,-2,-3,-4]
   qlist=[-1,-2,-3,-4]
   for istep,step in enumerate(steplist):
-    print(istep,step)
+    print(istep,step.step)
     print(step.time)
-    print(step.mr)
+    print(step.rho)
+    continue
     time[istep]=step.time
     try:
       step.read_surfmn()
@@ -124,16 +125,17 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
       if so, then searches that directoy for a dump file and surfmn file'''
   steplist=[]
   read_new = True
-  print(f"show plot {show_plot}")
-  print(f"pickle data {pickle_data}")
-  print(f"read pickle {read_pickle}")
   if read_pickle:
     pickle_list=glob.glob("pickle*")
     pickle_list.sort()
     if len(pickle_list)>0:
       read_new=False
       for iobj in pickle_list:
-        steplist.append(pickle.load(open(iobj, "rb" )))
+        with open(iobj,'rb') as file:
+          step=surfmnstep.SurfmnStep(None, None, None, None)
+          step.load(file)
+          steplist.append(step)
+#        steplist.append(pickle.load(open(iobj, "rb" )))
   if read_new==True:
     workdir=os.getcwd()
     listobjs = os.listdir(workdir)
@@ -147,10 +149,14 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
     time_hist(steplist)
   if pickle_data:
     for step in steplist:
+      if step==None:
+        continue
       if step.surfmn_data==False:
         steplist[1].read_surfmn()
       filename="pickle"+str(step.step).zfill(5)
-      pickle.dump(step,open(filename,'wb'))
+      with open(filename,'wb') as file:
+        step.dump(file)
+#      pickle.dump(step,open(filename,'wb'))
 
 #  steplist[1].read_surfmn()
 #  print(steplist[1].get_resonance("psi",1,-2))
