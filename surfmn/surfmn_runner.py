@@ -79,8 +79,7 @@ def time_hist(steplist):
   for istep,step in enumerate(steplist):
     print(istep,step.step)
     print(step.time)
-    print(step.rho)
-    continue
+    print(step.surfmn_data)
     time[istep]=step.time
     try:
       step.read_surfmn()
