@@ -77,12 +77,19 @@ def time_hist(steplist):
   mlist=[-1,-2,-3,-4]
   qlist=[-1,-2,-3,-4]
   for istep,step in enumerate(steplist):
-    print(istep)
-    step.read_surfmn()
+    print(istep,step)
+    print(step.time)
+    print(step.mr)
     time[istep]=step.time
-    psi[istep]=step.get_resonance("psi",1,-2)
-    psi3[istep]=step.get_resonance("psi",1,-3)
-    psi4[istep]=step.get_resonance("psi",1,-4)
+    try:
+      step.read_surfmn()
+      psi[istep]=step.get_resonance("psi",1,-2)
+      psi3[istep]=step.get_resonance("psi",1,-3)
+      psi4[istep]=step.get_resonance("psi",1,-4)
+    except:
+      psi[istep]=0.0
+      psi3[istep]=0.0
+      psi4[istep]=0.0
     if step.time>0: #avoids issues if no pertubation
       step.plot_surfmn("psi",1,**{"scale":1000})
       step.plot_radial("psi",1,mlist,**{"scale":1,"qlist":qlist})
@@ -117,6 +124,9 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
       if so, then searches that directoy for a dump file and surfmn file'''
   steplist=[]
   read_new = True
+  print(f"show plot {show_plot}")
+  print(f"pickle data {pickle_data}")
+  print(f"read pickle {read_pickle}")
   if read_pickle:
     pickle_list=glob.glob("pickle*")
     pickle_list.sort()
@@ -124,7 +134,7 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
       read_new=False
       for iobj in pickle_list:
         steplist.append(pickle.load(open(iobj, "rb" )))
-  if read_new:
+  if read_new==True:
     workdir=os.getcwd()
     listobjs = os.listdir(workdir)
     listobjs.sort()

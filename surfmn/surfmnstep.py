@@ -18,6 +18,17 @@ class SurfmnStep:
     self.time=steptime
     self.mmax=None
     self.surfmn_data=False #set to true surfmn file has been read
+    self.nlist=[]
+    self.ndict={}
+    self.bmnlist=[]
+    self.psimnlist=[]
+    self.rho = np.empty([1])
+    self.vprime = np.empty([1])
+    self.q = np.empty([1])
+    self.mr=np.empty([1])
+    self.psi_q = np.empty([1])
+    self.qmin=np.empty([1])
+    self.qmax=np.empty([1])
   def get_m_index(self,m):
     '''Return the index for the given m
        Return None if m is out of range'''
@@ -37,10 +48,6 @@ class SurfmnStep:
        Calculates psimn from bmn
        sets mmax (no consistancy checks across bmn)
     '''
-    self.nlist=[]
-    self.ndict={}
-    self.bmnlist=[]
-    self.psimnlist=[]
     index=0
     with h5py.File(self.surfmn_file,'r') as fc:
       self.surfmn_data=True
