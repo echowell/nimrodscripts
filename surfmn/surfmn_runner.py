@@ -151,7 +151,7 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
       if step==None:
         continue
       if step.surfmn_data==False:
-        steplist[1].read_surfmn()
+        step.read_surfmn()
       filename="pickle"+str(step.step).zfill(5)
       with open(filename,'wb') as file:
         step.dump(file)
