@@ -13,6 +13,9 @@ in the current directory, searchs for a surfmn file, and a dump file. If the
 dump file exists, then record the time. If not only record step number. It
 then calls surfmn routines to plot the data and record the reconnected flux'''
 
+def pickle_sort(file):
+  print(file[6:])
+  return int(file[6:])
 
 def get_dumptime(thisfile):
   ''' Open an hdf5 file and read the dump time
@@ -71,46 +74,95 @@ def find_files(thisdir):
 def time_hist(steplist):
   print(len(steplist))
   time=np.zeros(len(steplist))
-  psi=np.zeros(len(steplist))
-  psi3=np.zeros(len(steplist))
-  psi4=np.zeros(len(steplist))
+  psi21=np.zeros(len(steplist))
+  psi31=np.zeros(len(steplist))
+  psi41=np.zeros(len(steplist))
+  psi32=np.zeros(len(steplist))
+  psi43=np.zeros(len(steplist))
+  psi54=np.zeros(len(steplist))
+  psi65=np.zeros(len(steplist))
   mlist=[-1,-2,-3,-4]
   qlist=[-1,-2,-3,-4]
   for istep,step in enumerate(steplist):
-    print(istep,step.step)
-    print(step.time)
-    print(step.surfmn_data)
+    print(istep,step.step, step.time)
     time[istep]=step.time
-    try:
+    if step.surfmn_data==False:
       step.read_surfmn()
-      psi[istep]=step.get_resonance("psi",1,-2)
-      psi3[istep]=step.get_resonance("psi",1,-3)
-      psi4[istep]=step.get_resonance("psi",1,-4)
-    except:
-      psi[istep]=0.0
-      psi3[istep]=0.0
-      psi4[istep]=0.0
-    if step.time>0: #avoids issues if no pertubation
+
+    psi21[istep]=step.get_resonance("psi",1,-2)
+    psi31[istep]=step.get_resonance("psi",1,-3)
+    psi41[istep]=step.get_resonance("psi",1,-4)
+    psi43[istep]=step.get_resonance("psi",3,-4)
+    psi32[istep]=step.get_resonance("psi",2,-3)
+    psi54[istep]=step.get_resonance("psi",4,-5)
+    psi65[istep]=step.get_resonance("psi",5,-6)
+    if step.step in []:#[10000,18680,28000,66000,96000]:
+#    if step.time>0: #avoids issues if no pertubation
       step.plot_surfmn("psi",1,**{"scale":1000})
+      step.plot_surfmn("psi",2,**{"scale":1000})
+      step.plot_surfmn("psi",3,**{"scale":1000})
+      step.plot_surfmn("psi",4,**{"scale":1000})
+      step.plot_surfmn("psi",5,**{"scale":1000})
       step.plot_radial("psi",1,mlist,**{"scale":1,"qlist":qlist})
   fig = plt.figure(figsize=(6,5))
   ax=fig.add_subplot(111)
-  plt.plot(time*1000,psi*1000)
+  plt.plot(time*1000,psi21*1000)
   plt.title(r"$\psi$ 2/1",fontsize=16)
   plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
   plt.xlabel(r't [ms]',fontsize=16)
   plt.show()
   fig = plt.figure(figsize=(6,5))
   ax=fig.add_subplot(111)
-  plt.plot(time*1000,psi3*1000)
+  plt.plot(time*1000,psi31*1000)
   plt.title(r"$\psi$ 3/1",fontsize=16)
   plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
   plt.xlabel(r't [ms]',fontsize=16)
   plt.show()
   fig = plt.figure(figsize=(6,5))
   ax=fig.add_subplot(111)
-  plt.plot(time*1000,psi4*1000)
+  plt.plot(time*1000,psi41*1000)
   plt.title(r"$\psi$ 4/1",fontsize=16)
+  plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+  plt.xlabel(r't [ms]',fontsize=16)
+  plt.show()
+  fig = plt.figure(figsize=(6,5))
+  ax=fig.add_subplot(111)
+  plt.plot(time*1000,psi43*1000)
+  plt.title(r"$\psi$ 4/3",fontsize=16)
+  plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+  plt.xlabel(r't [ms]',fontsize=16)
+  plt.show()
+  fig = plt.figure(figsize=(6,5))
+  ax=fig.add_subplot(111)
+  plt.plot(time*1000,psi32*1000)
+  plt.title(r"$\psi$ 3/2",fontsize=16)
+  plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+  plt.xlabel(r't [ms]',fontsize=16)
+  plt.show()
+  fig = plt.figure(figsize=(6,5))
+  ax=fig.add_subplot(111)
+  plt.plot(time*1000,psi54*1000)
+  plt.title(r"$\psi$ 5/4",fontsize=16)
+  plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+  plt.xlabel(r't [ms]',fontsize=16)
+  plt.show()
+  fig = plt.figure(figsize=(6,5))
+  ax=fig.add_subplot(111)
+  plt.plot(time*1000,psi65*1000)
+  plt.title(r"$\psi$ 6/5",fontsize=16)
+  plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+  plt.xlabel(r't [ms]',fontsize=16)
+  plt.show()
+  fig = plt.figure(figsize=(6,5))
+  ax=fig.add_subplot(111)
+  plt.plot(time*1000,psi21*1000,label="2/1")
+  plt.plot(time*1000,psi31*1000,label="3/1")
+  plt.plot(time*1000,psi32*1000,label="3/2")
+  plt.plot(time*1000,psi43*1000,label="4/3")
+  plt.plot(time*1000,psi54*1000,label="5/4")
+  plt.plot(time*1000,psi65*1000,label="6/5")
+  ax.legend(loc=0)
+  plt.title(r"$\psi$",fontsize=16)
   plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
   plt.xlabel(r't [ms]',fontsize=16)
   plt.show()
@@ -126,7 +178,7 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
   read_new = True
   if read_pickle:
     pickle_list=glob.glob("pickle*")
-    pickle_list.sort()
+    pickle_list.sort(key=pickle_sort)
     if len(pickle_list)>0:
       read_new=False
       for iobj in pickle_list:
