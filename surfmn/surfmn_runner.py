@@ -7,6 +7,7 @@ import numpy as np
 import argparse
 import pickle
 import glob
+from shutil import copy2
 
 ''' This is a generic runner for surfmn. It loops over a bunch of directorys
 in the current directory, searchs for a surfmn file, and a dump file. If the
@@ -40,6 +41,7 @@ def find_files(thisdir):
   dumpfile=None
   stepnumber=None
   steptime=None
+  nimrodin=None
   listobjs = os.listdir(thisdir)
   for iobj in listobjs:
     wordlist = iobj.split('.')
@@ -68,8 +70,11 @@ def find_files(thisdir):
       else:
         print(f"Multiple surfmn files in directory {thisdir}")
         raise
+    elif (iobj=='nimrod.in'):
+      nimrodin=thisdir+'/'+iobj
 
-  return surfmn_file, dumpfile, stepnumber, steptime
+
+  return surfmn_file, dumpfile, stepnumber, steptime, nimrodin
 
 def time_hist(steplist):
   print(len(steplist))
@@ -88,7 +93,27 @@ def time_hist(steplist):
     time[istep]=step.time
     if step.surfmn_data==False:
       step.read_surfmn()
-
+    if step.profdata==False:
+      try:
+        os.mkdir('tempprofile')
+      except:
+        print("tempprofile directoy exists")
+      copy2(step.dumpfile,'./tempprofile')
+      copy2(step.nimrodin,'./tempprofile')
+      os.chdir('tempprofile')
+      step.get_profiles()
+      for iobj in os.listdir('.'):
+        os.remove(iobj)
+      os.chdir('../')
+      os.rmdir('tempprofile')
+    fig = plt.figure(figsize=(6,5))
+    ax=fig.add_subplot(111)
+    plt.plot(step.profs.rhon,step.profs.omegator)
+    plt.title(r"fsa",fontsize=16)
+    plt.ylabel(r'nd ',fontsize=16)
+    plt.xlabel(r'rho',fontsize=16)
+    plt.tight_layout()
+    plt.show()
     psi21[istep]=step.get_resonance("psi",1,-2)
     psi31[istep]=step.get_resonance("psi",1,-3)
     psi41[istep]=step.get_resonance("psi",1,-4)
@@ -96,7 +121,7 @@ def time_hist(steplist):
     psi32[istep]=step.get_resonance("psi",2,-3)
     psi54[istep]=step.get_resonance("psi",4,-5)
     psi65[istep]=step.get_resonance("psi",5,-6)
-    if step.step in []:#[10000,18680,28000,66000,96000]:
+    if step.step in [104000]:#[10000,18680,28000,66000,96000]:
 #    if step.time>0: #avoids issues if no pertubation
       step.plot_surfmn("psi",1,**{"scale":1000})
       step.plot_surfmn("psi",2,**{"scale":1000})
@@ -183,7 +208,7 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
       read_new=False
       for iobj in pickle_list:
         with open(iobj,'rb') as file:
-          step=surfmnstep.SurfmnStep(None, None, None, None)
+          step=surfmnstep.SurfmnStep(None, None, None, None, None)
           step.load(file)
           steplist.append(step)
 #        steplist.append(pickle.load(open(iobj, "rb" )))
@@ -194,8 +219,8 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
     for iobj in listobjs:
       if os.path.isdir(iobj):
         thisdir=workdir+'/'+iobj
-        surfmn_file, dump, step, time = find_files(thisdir)
-        steplist.append(surfmnstep.SurfmnStep(surfmn_file, dump, step, time))
+        surfmn_file, dump, step, time, nimrodin = find_files(thisdir)
+        steplist.append(surfmnstep.SurfmnStep(surfmn_file, dump, step, time,nimrodin))
   if show_plot:
     time_hist(steplist)
   if pickle_data:
@@ -204,6 +229,19 @@ def surfmn_runner(show_plot=True,pickle_data=False,read_pickle=False):
         continue
       if step.surfmn_data==False:
         step.read_surfmn()
+      if step.profdata==False:
+        try:
+          os.mkdir('tempprofile')
+        except:
+          print("tempprofile directoy exists")
+        copy2(step.dumpfile,'./tempprofile')
+        copy2(step.nimrodin,'./tempprofile')
+        os.chdir('tempprofile')
+        step.get_profiles()
+        for iobj in os.listdir('.'):
+          os.remove(iobj)
+        os.chdir('../')
+        os.rmdir('tempprofile')
       filename="pickle"+str(step.step).zfill(5)
       with open(filename,'wb') as file:
         step.dump(file)

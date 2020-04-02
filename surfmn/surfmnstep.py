@@ -10,13 +10,17 @@ import scipy.interpolate as interp
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import pickle
+import profiles as pf
 
 class SurfmnStep:
-  def __init__(self,surfmn_file,dumpfile,stepnumber,steptime):
+  def __init__(self,surfmn_file,dumpfile,stepnumber,steptime,nimrodin):
     self.surfmn_file=surfmn_file
     self.dumpfile=dumpfile
     self.step=stepnumber
     self.time=steptime
+    self.nimrodin=nimrodin
+    self.profdata=False
+    self.profs=None
     self.mmax=None
     self.surfmn_data=False #set to true surfmn file has been read
     self.nlist=[]
@@ -217,12 +221,16 @@ class SurfmnStep:
       print(f"Field {field} is not reconized")
       raise
     return resfield(self.psi_q(qres))
-
+  def get_profiles(self):
+    self.profdata=True
+    self.profs=pf.Profiles(self.dumpfile,self.nimrodin)
+    self.profs.calculate(rzo=[1.768,-0.018831,0.0])
   def dump(self,file):
     pickle.dump(self.surfmn_file,file)
     pickle.dump(self.dumpfile,file)
     pickle.dump(self.step,file)
     pickle.dump(self.time,file)
+    pickle.dump(self.nimrodin,file)
     pickle.dump(self.mmax,file)
     pickle.dump(self.surfmn_data,file)
     pickle.dump(self.nlist,file)
@@ -236,12 +244,15 @@ class SurfmnStep:
     pickle.dump(self.psi_q,file)
     pickle.dump(self.qmin,file)
     pickle.dump(self.qmax,file)
-
+    pickle.dump(self.profdata,file)
+    if(self.profdata==True):
+      self.profs.dump(file)
   def load(self,file):
     self.surfmn_file=pickle.load(file)
     self.dumpfile=pickle.load(file)
     self.step=pickle.load(file)
     self.time=pickle.load(file)
+    self.nimrodin=pickle.load(file)
     self.mmax=pickle.load(file)
     self.surfmn_data=pickle.load(file)
     self.nlist=pickle.load(file)
@@ -255,3 +266,7 @@ class SurfmnStep:
     self.psi_q=pickle.load(file)
     self.qmin=pickle.load(file)
     self.qmax=pickle.load(file)
+    self.profdata=pickle.load(file)
+    if(self.profdata==True):
+      self.profs=pf.Profiles(self.dumpfile,self.nimrodin)
+      self.profs.load(file)
