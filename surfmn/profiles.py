@@ -121,6 +121,26 @@ class Profiles:
     self.bigr[isurf]=max(self.bigr[isurf],rzc[0])
     return dy
 
+  def get_omega_exb(self, n, rhon=None):
+    omega_exb=n*(4*np.pi**2*self.q*self.kpol/self.vprime-self.omegator)
+    if rhon==None:
+      return omega_exb
+    return interp1d(self.rhon, omega_exb, kind='cubic')(rhon)
+
+  def get_rho_q(self,q):
+    try:
+      return interp1d(self.q,self.rhon, kind='cubic')(q)
+    except:
+      print(f"The safety factor {q} is not it the domain")
+      raise
+
+  def get_field_rho(self,field,rhon):
+    try:
+      return interp1d(self.rhon,field, kind='cubic')(rhon)
+    except:
+      print(f"Problem evaluitng field at rhon={rhon}")
+      raise
+
   def calculate(self,rzo=None,rzx=None,**kwargs):
     mi=kwargs.get("mi",3.3435860e-27)
     qe=kwargs.get("qe",1.609e-19)
@@ -150,7 +170,7 @@ class Profiles:
     self.psin=interp1d(dvar[1,:iend], dvar[0,:iend], kind='cubic')(self.rhon)
     self.psi=interp1d(dvar[1,:iend], dvar[2,:iend], kind='cubic')(self.rhon)
     self.bigr=interp1d(dvar[1,:iend], tempbigr[:iend], kind='cubic')(self.rhon)
-    self.vprime=interp1d(dvar[1,:iend], dvar[6,:iend], kind='cubic')(self.rhon)
+    self.vprime=np.pi*2*interp1d(dvar[1,:iend], dvar[6,:iend], kind='cubic')(self.rhon)
     self.q=interp1d(dvar[1,:iend], dvar[7,:iend], kind='cubic')(self.rhon)
 
   # yvars
