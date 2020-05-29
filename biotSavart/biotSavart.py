@@ -14,13 +14,14 @@ from mpl_toolkits.mplot3d import Axes3D
 
 homeDir = os.environ['HOME']
 filePath = homeDir + '/SCRATCH/174446_novac_new_eq/surfmn_scan/case_15/'
-filePath = homeDir+ '/SCRATCH/174446_novac_new_eq/192601_eq_valgrind/'
+#filePath = homeDir+ '/SCRATCH/157458/03240/19120201_rmp/'
 rzfile = filePath + 'nimrod_bdry_rz.txt'
 baseFileName = "brmpn"
 fileExt = ".dat"
 
 
 phiPlanes = 4 #n=0->2
+phiPlanes = 100 #plotting
 segmentsPerCoil = 50
 baseCurrent = 1.0
 nPert = 1
@@ -64,12 +65,12 @@ coil_theta = [0, .15, .5, .85]
 coil_tilt = [0.25, .65, .75, 0.85]
 #delta theta
 delta_theta=0.20
-delta_tilt=.17
+delta_tilt=.15
 
 coil_theta = [0, delta_theta, .5, 1-delta_theta]
 coil_tilt = [0.25, .5+delta_tilt, .75, 1-delta_tilt]
 scope=False
-#scope=True
+scope=True
 
 rmag_axis=1.7682
 zmag_axis=0.0
@@ -106,12 +107,14 @@ for ii in range(6):
 # plot coils
 fig =plt.figure()
 ax = fig.add_subplot(111,projection='3d')
+ax.plot_surface(nodeXYZ[0,:,0:int(4*phiPlanes/4)], nodeXYZ[1,:,0:int(4*phiPlanes/4)], nodeXYZ[2,:,0:int(4*phiPlanes/4)],color='purple',alpha=.2) 
 for iCoil in coilList:
 #  print(iCoil.xyz[2,:])
   iCoil.plot_coil(ax)
-ax.set_xlabel('X Label')
-ax.set_ylabel('Y Label')
-ax.set_zlabel('Z Label')
+#ax.set_xlabel('X Label')
+#ax.set_ylabel('Y Label')
+#ax.set_zlabel('Z Label')
+ax.set_axis_off()
 plt.show()
 
 rd3d= [2.443303419949772, 2.445003360252620, 2.435206281190796,
