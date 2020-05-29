@@ -53,41 +53,9 @@ def wrapper_fun(currents):
   return cost
 
 ### start main program
-for this_dir in dir_list:
-  try:
-    os.mkdir(this_dir)
-  except FileExistsError:
-    print("Folder "+ this_dir + " exists, removing contents")
-    for this_file in os.listdir(this_dir):
-      file_path = os.path.join(this_dir, this_file)
-      os.remove(file_path)
-  this_files=files_dict[this_dir]
-  for this_file in this_files:
-    src_path = os.path.join(src_dir,this_file)
-    if (this_dir=="vac" and this_file=="nimrod.in_vac"):
-      cp_path = os.path.join(this_dir,"nimrod.in")
-    else:
-      cp_path = os.path.join(this_dir,this_file)
-    shutil.copy(src_path, cp_path)
 
 ### set up coils
-this_coils=bsf.coil_opt("gs/")
-
-x0 = [.5, -.5, .5, -.5]
-bnds = ((-1,1),(-1,1),(-1,1),(-1,1))
-tol=1.0e-6
-res = opt.minimize(wrapper_fun,x0,method="TNC",bounds=bnds,tol=tol,options={'disp': True, "eps":1.0e-2, "maxiter":20})
-wrapper_fun(res.x)
-with open("result.txt",'w') as this_file:
-  this_file.write("Optimization complete\n")
-  this_file.write("Optimize success?:  ")
-  this_file.write(str(res.success))
-  this_file.write("\n The optimal parameters are:\n")
-  this_file.write(str(res.x))
-  this_file.write("\n Optimization iterations :  ")
-  this_file.write(str(res.nit))
-  this_file.write("\n The optimal cost :  ")
-  this_file.write(str(res.fun))
-
-print(res.x)
+currents=[0.47528571, -0.57160186,  0.6809352,  -0.13174283]
+this_coils=bsf.coil_opt("./")
+this_coils.coil_calc(currents)
 
