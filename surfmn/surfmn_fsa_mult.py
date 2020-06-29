@@ -50,9 +50,20 @@ def surfmn_runner(show_plot=True,pickle_data=False,\
         steplist.append(surf)
   #        steplist.append(pickle.load(open(iobj, "rb" )))
   else: #read from dump files and calculate fsa
-    dumplist=glob.glob("dumpg*.h5")
+    dumplist=[]
+    if args['folder']:
+      workdir=os.getcwd()
+      listobjs = os.listdir(workdir)
+      listobjs.sort()
+      for iobj in listobjs:
+        if os.path.isdir(iobj):
+          thisdir=workdir+'/'+iobj+'/dumpgll*.h5'
+          dumpfiles=glob.glob(thisdir)
+          for file in dumpfiles:
+            dumplist.append(file)
+    else:
+      dumplist=glob.glob("dumpg*.h5")
     dumplist.sort(key=dump_sort)
-    print(dumplist)
     if not os.path.isfile(nimrodin):
       print(f"nimrod.in not found")
       raise IOError
@@ -91,6 +102,7 @@ def surfmn_runner(show_plot=True,pickle_data=False,\
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='Surfmn runner.')
   parser.add_argument('--plot', action='store_true',help='shows plots')
+  parser.add_argument('--folder', action='store_true',help='indicates the the dump files are stored in folders')
   parser.add_argument('--pickle', action='store_true',help='pickle data')
   parser.add_argument('--read', '-r', action='store_true',help='read pickled data')
   parser.add_argument('--mmax',type=int,default=15,help="max poloidal mode number")
