@@ -27,7 +27,7 @@ class SurfmnStep:
     self.ndict={}
     self.bmnlist=[]
     self.psimnlist=[]
-    self.rho = np.empty([1])
+    self.rho = np.empty([1]) #this is a fsa r
     self.vprime = np.empty([1])
     self.q = np.empty([1])
     self.mr=np.empty([1])
@@ -191,6 +191,71 @@ class SurfmnStep:
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.tight_layout()
+    if showplot:
+      plt.show()
+
+  def plot_radial_rho(self,field,nn,mlist,**kwargs):
+    ''' To do, I want to clean up the api'''
+    if not(self.surfmn_data):
+      self.read_surfmn()
+    if nn<1:
+      print("nn must be positive by convention in plot_radial")
+      raise ValueError
+    ndex=self.ndict[nn]
+    showplot=False
+# Create a new figure if an axis object is not included in kwargs
+    if 'axis' in kwargs:
+      ax = kwargs['axis']
+    else:
+      showplot=True
+      if 'figsize' in kwargs:
+        fig = plt.figure(figsize=kwargs['figsize'])
+      else:
+        fig = plt.figure(figsize=(6,5))
+      ax=fig.add_subplot(111)
+    if (field=='b'):
+      fmn=np.copy(self.bmnlist[ndex])
+      title=f"$b_m$ for n={int(nn)} at {self.time*1000:.3f}ms"
+      ylable="b"
+    elif (field=='psi'):
+      fmn=np.copy(self.psimnlist[ndex])
+      title=f"$\psi_m$ for n={int(nn)} at {self.time*1000:.3f}ms"
+      ylabel=f"$\psi$"
+    if "scale" in kwargs:
+      fmn*=kwargs["scale"]
+    colorlist = list(mcolors.TABLEAU_COLORS)
+# Update plot based on keys in kwargs
+    title=kwargs.get("title",title)
+    ylabel=kwargs.get("ylabel",ylabel)#todo this should be rho
+    xlabel=kwargs.get("xlabel",r'$\rho$')
+    fontsize=kwargs.get("fontsize",16)
+    showplot=kwargs.get("plot",showplot) #orverides showplot logic
+    qlist=kwargs.get("qlist",[])
+    print(self.rho)
+    print(self.mr)
+    print(self.profs.q)
+    for im,this_m in enumerate(mlist):
+      this_i = self.get_m_index(this_m)
+      if this_i!= None:
+        mlbl = "m = " + str(this_m)
+        tc=colorlist[im]
+        ax.plot(self.profs.get_rho_q(self.q[20:]),fmn[20:,this_i], color=tc, label=mlbl)
+    for iq,qq in enumerate(qlist):
+      try:
+        irho = self.profs.get_rho_q(qq)
+        print(irho,qq)
+        qlbl = f"q = {qq:.2f}"
+        tc=colorlist[iq]
+        ax.axvline(irho,ls=':',color=tc, label=qlbl)
+      except:
+        print(f"q={qq:.2f} is not in the domain")
+    ax.axhline(0,ls='-',c='k')
+    ax.legend(loc=0)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.xlim(0,1)
     plt.tight_layout()
     if showplot:
       plt.show()

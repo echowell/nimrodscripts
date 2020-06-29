@@ -90,6 +90,7 @@ def time_hist(steplist):
   exb31=np.zeros(len(steplist))
   exb32=np.zeros(len(steplist))
   exb43=np.zeros(len(steplist))
+  exb54=np.zeros(len(steplist))
   mlist=[-1,-2,-3,-4]
   qlist=[-1,-2,-3,-4]
   for istep,step in enumerate(steplist):
@@ -130,14 +131,15 @@ def time_hist(steplist):
     this_q=step.profs.get_rho_q(q=-3)
     exb31[istep]=step.profs.get_omega_exb(n=1,rhon=this_q)/(2*np.pi)
     this_q=step.profs.get_rho_q(q=-1.5)
-    exb32[istep]=step.profs.get_omega_exb(n=2,rhon=this_q)/(2*np.pi)
+    exb32[istep]=step.profs.get_omega_exb(n=1,rhon=this_q)/(2*np.pi)
     this_q=step.profs.get_rho_q(q=-4/3)
-    exb43[istep]=step.profs.get_omega_exb(n=3,rhon=this_q)/(2*np.pi)
-    if step.step in [2000000]:#[10000,18680,28000,66000,96000]:
+    exb43[istep]=step.profs.get_omega_exb(n=1,rhon=this_q)/(2*np.pi)
+    this_q=step.profs.get_rho_q(q=-5/4)
+    exb54[istep]=step.profs.get_omega_exb(n=1,rhon=this_q)/(2*np.pi)
+    if step.step in [16000]:#[10000,18680,28000,66000,96000]:
 #    if step.time>0: #avoids issues if no pertubation
       this_exb=step.profs.get_omega_exb(n=1)
       this_rho_21=step.profs.get_rho_q(q=-2)
-      fig = plt.figure(figsize=(6,5))
 
       fig = plt.figure(figsize=(6,5))
       ax=fig.add_subplot(111)
@@ -227,13 +229,15 @@ def time_hist(steplist):
   plt.show()
   fig = plt.figure(figsize=(6,5))
   ax=fig.add_subplot(111)
-  plt.plot(time*1000,np.abs(exb43)/1000)
-  plt.plot(time*1000,np.abs(exb32)/1000)
-  plt.plot(time*1000,np.abs(exb31)/1000)
-  plt.plot(time*1000,np.abs(exb21)/1000)
-  plt.title(r"$f_{eb}$ ",fontsize=16)
+  plt.plot(time*1000,np.abs(exb54)/1000,label="5/4")
+  plt.plot(time*1000,np.abs(exb43)/1000,label="4/3")
+  plt.plot(time*1000,np.abs(exb32)/1000,label="3/2")
+  plt.plot(time*1000,np.abs(exb21)/1000,label="2/1")
+  plt.title(r"Mode Rotation Frequency / n",fontsize=16)
   plt.ylabel(r'f [kHz] ',fontsize=16)
   plt.xlabel(r't [ms]',fontsize=16)
+  plt.legend(loc="best")
+  plt.ylim(0,3)
   plt.tight_layout()
   plt.show()
 #  for istep in steplist:

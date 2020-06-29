@@ -1,4 +1,5 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
+
 #
 # Input files:
 # Ouput file:
@@ -19,21 +20,20 @@ def bump_function(amp,time,time_scale,time_offset):
 
 
 amp = 1.0
-t_scale = 1.0
-t_offset = 1.005
+t_scale = 0.50
+t_offset = 0.505
 npts = 1000
 
-time = np.linspace(0,2*t_offset,npts)
+time = np.linspace(0,10*t_offset,npts)
 bump = np.zeros([npts])
 for it, tt in enumerate(time):
   bump[it] = bump_function(amp,tt,t_scale,t_offset)
 
-fig =plt.figure()
+fig =plt.figure(figsize=(8,6))
 ax = fig.add_subplot(111)
-
-ax.set_title("Bump function pulse")
+ax.set_title("Magnetic Perturbation Pulse Shape",fontsize=18)
 ax.plot(time,bump)
-ax.set_xlabel("Time [A.U.]")
-ax.set_ylabel("Amplitude [A.U.]")
+ax.set_xlabel("Time [ms]",fontsize=18)
+ax.set_ylabel("Amplitude [A.U.]",fontsize=18)
 plt.tight_layout()
 plt.show()

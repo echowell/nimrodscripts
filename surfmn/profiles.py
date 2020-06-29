@@ -129,7 +129,7 @@ class Profiles:
 
   def get_rho_q(self,q):
     try:
-      return interp1d(self.q,self.rhon, kind='cubic')(q)
+      return interp1d(self.q,self.rhon, kind='cubic',fill_value="extrapolate")(q)
     except:
       print(f"The safety factor {q} is not it the domain")
       raise
