@@ -89,7 +89,7 @@ def hcmult(args):
                     print(f"writing file {pfile}")
                     with open(pfile,'wb') as file:
                         this.dump(file)
-
+                this.clean_up()
     for this in steplist:
         this.print_integrals()
         nimtime.timer.print_times()

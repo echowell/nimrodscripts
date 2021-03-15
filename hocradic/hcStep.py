@@ -261,6 +261,14 @@ class hcstep:
             print(key, integral)
         print('volume ', self.volume)
 
+    def clean_up(self):
+        ''' Clean up fields to reduce memory foot print'''
+        self.fields.clean_up()
+        self.grid=None
+        self.intSet=False
+        self.intWeight=np.empty([1])
+
+
 ###############################################################################
 # TESTING NOTES
 #############################
