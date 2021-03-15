@@ -93,7 +93,7 @@ def hcmult(args):
     for this in steplist:
         this.print_integrals()
         nimtime.timer.print_times()
-        print(hc.step, hc.time)
+        print(this.step, this.time)
     #plot data here
     if args['plot']:
         pass
