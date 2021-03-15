@@ -76,7 +76,7 @@ def hcmult(args):
                 os.chdir('tempdir')
                 this=step.hcstep(dump,nimrodin)
                 this.get_dumptime()
-                this.analyze_power()
+                this.analyze_power(npts=args['npts'])
                 for iobj in os.listdir('.'):
                     os.remove(iobj)
                 os.chdir('../')
@@ -89,7 +89,7 @@ def hcmult(args):
                     print(f"writing file {pfile}")
                     with open(pfile,'wb') as file:
                         this.dump(file)
-                        
+
     for this in steplist:
         this.print_integrals()
         nimtime.timer.print_times()
@@ -104,6 +104,7 @@ if __name__ == "__main__":
     parser.add_argument('--plot', action='store_true',help='shows plots')
     parser.add_argument('--pickle', action='store_true',help='pickle data')
     parser.add_argument('--read', '-r', action='store_true',help='read pickled data')
+    parser.add_argument('--npts', '-n', type=int, default=512,help='number of points in 1D')
     args = vars(parser.parse_args())
     print(args)
     hcmult(args=args)
