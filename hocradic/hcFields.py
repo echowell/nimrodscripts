@@ -637,16 +637,16 @@ class hcfields:
             self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
             fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
 
-        @timer.timer_func
-        def clean_up(self):
-            for key, field in self.fielddict.items():
-                field = None
-            self.fielddict={}
-            for key, field in self.energyDict.items():
-                field = None
-            self.energyDict={}
-            for key, field in self.powerFluxDict.items():
-                field = None
-            self.powerFluxDict={}
-            self.eval=None
-            self.grid=None
+    @timer.timer_func
+    def clean_up(self):
+        for key, field in self.fielddict.items():
+            field = None
+        self.fielddict={}
+        for key, field in self.energyDict.items():
+            field = None
+        self.energyDict={}
+        for key, field in self.powerFluxDict.items():
+            field = None
+        self.powerFluxDict={}
+        self.eval=None
+        self.grid=None
