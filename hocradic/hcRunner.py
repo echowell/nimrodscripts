@@ -41,7 +41,8 @@ def hcrunner(file_name=None,
 
       hc=step.hcstep(file_name,nimrodin)
       hc.get_dumptime()
-      hc.analyze_power()
+      hc.analyze_power(npts=args['npts'],plot=True)
+      hc.analyze_power_adv(npts=args['npts'],plot=True)
       hc.print_integrals()
       nimtime.timer.print_times()
       print(hc.step, hc.time)
@@ -72,6 +73,7 @@ if __name__ == "__main__":
     parser.add_argument('file',help='file name')
     parser.add_argument('--plot', action='store_true',help='shows plots')
     parser.add_argument('--pickle', action='store_true',help='pickle data')
+    parser.add_argument('--npts', '-n', type=int, default=512,help='number of points in 1D')
 #  parser.add_argument('--read', '-r', action='store_true',help='read pickled data')
     args = vars(parser.parse_args())
     print(args)

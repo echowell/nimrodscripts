@@ -187,24 +187,45 @@ class hcstep:
 
     def integrateEnergy(self,plot_integrand=False):
         self.fields.energyDensity()
+        if self.fields.filter is None:
+            self.fields.calculateFilter()
         for key, integrand in self.fields.energyDict.items():
-            integral=self.integrateSurface(integrand)
+            if integrand.ndim == self.fields.filter.ndim:
+                filtered_int = integrand * self.fields.filter
+            else:
+                filtered_int = integrand * self.fields.filter[...,0]
+            integral=self.integrateSurface(filtered_int)
             print(key,integral)
             self.energyDict[key]=integral
             if plot_integrand:
                 #todo This needs work
-                self.plotIntegrand(integrand,imode=1)
+                self.plotIntegrand(filtered_int,imode=1)
 
     def integratePowerFlux(self,plot_integrand=False):
         self.fields.powerFlux()
+        if self.fields.filter is None:
+            self.fields.calculateFilter()
         for key, integrand in self.fields.powerFluxDict.items():
-            integral=self.integrateSurface(integrand)
+            filtered_int = integrand * self.fields.filter
+            integral=self.integrateSurface(filtered_int)
             print(key,integral)
             if plot_integrand:
                 #todo This needs work
-                self.plotIntegrand(integrand,imode=1)
+                self.plotIntegrand(filtered_int,imode=1)
             self.powerDict[key]=integral
 
+    def integratePowerFluxAdv(self,plot_integrand=False):
+        self.fields.advectPowerFlux()
+        if self.fields.filter is None:
+            self.fields.calculateFilter()
+        for key, integrand in self.fields.advectDict.items():
+            filtered_int = integrand * self.fields.filter
+            integral=self.integrateSurface(filtered_int)
+            print(key,integral)
+            if plot_integrand:
+                #todo This needs work
+                self.plotIntegrand(filtered_int,imode=1)
+            self.powerDict[key]=integral
 
     def plotIntegrand(self,integrand,imode=None,title="Power Transfer"):
         ndim=self.fields.grid.rzp.ndim
@@ -229,9 +250,10 @@ class hcstep:
             ax.set_aspect('equal')
             ax.set(title=title )#r"$v\cdot \nabla p$")
             plt.contourf(rz[0],rz[1],integrand[...,imode])
+            plt.colorbar()
             plt.show()
 
-    def analyze_power(self,grid='close',npts=512,lphi=5,nonlin_order=2):
+    def analyze_power(self,grid='close',npts=512,lphi=5,nonlin_order=2,plot=False):
         if grid == 'close':
             rmin=1.15
             rmax=2.3
@@ -250,9 +272,31 @@ class hcstep:
         self.fields.set_method("powerflux")
         self.set_3dgrid(rmin,rmax,zmin,zmax,npts,npts,lphi,nonlin_order)
         self.integrateEnergy()
-        self.integratePowerFlux()
+        self.integratePowerFlux(plot_integrand=plot)
         volumeInt=np.ones_like(self.fields.grid.rzp[0,:,:,0])
         self.volume=self.integrateSurface(volumeInt)
+
+    def analyze_power_adv(self,grid='close',npts=512,lphi=5,nonlin_order=2,plot=False):
+        if grid == 'close':
+            rmin=1.15
+            rmax=2.3
+            zmin=-1.25
+            zmax=1.0
+        elif grid == 'd3d':
+            rmin=0.8
+            rmax=2.5
+            zmin=-1.5
+            zmax=1.5
+        else:
+            print(f"Grid = {grid} is not recognized")
+            raise ValueError
+        #npts=128 #debug
+
+        self.fields.set_method("advectPowerflux")
+        if grid ==None:
+            self.set_3dgrid(rmin,rmax,zmin,zmax,npts,npts,lphi,nonlin_order)
+        self.integratePowerFluxAdv(plot_integrand=plot)
+
 
     def print_integrals(self):
         for key, integral in self.energyDict.items():

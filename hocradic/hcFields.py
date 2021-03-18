@@ -25,6 +25,8 @@ class hcfields:
         self.fielddict={}
         self.energyDict={}
         self.powerFluxDict={}
+        self.advectDict={}
+        self.filter=None
         self.evalb_timer=0.0
         self.fft_timer=0.0
         self.ndmode=0
@@ -159,6 +161,15 @@ class hcfields:
             self.p0=True
             self.ppert=True
             self.diff_dmode=1
+        elif method == 'advectPowerflux':
+            self.ndmode=0 #check
+            self.neq=True
+            self.ne0=True
+            self.npert=False
+            self.vdmode=1
+            self.veq=True
+            self.ve0=True
+            self.vpert=True
 
     @timer.timer_func
     def eval_symm(self,fname,rzp,dmode,eq):
@@ -407,6 +418,17 @@ class hcfields:
         return None
 
     @timer.timer_func
+    def calculateFilter(self,grid=None,cutoff=300):
+        grid,rzp=self.get_gridrzp(grid)
+        if 'diff_shape' not in self.fielddict:
+            self.eval_diff(grid)
+        if 'jeq' not in self.fielddict:
+            self.eval_j(grid,fft=True)
+        nfour=self.fielddict['jfour'].shape[-1]
+        temp = np.nan_to_num(self.fielddict['diff_shape'][0].data[...,:nfour])
+        self.filter = np.where((temp < cutoff) & (temp > 0), 1., 0.)
+
+    @timer.timer_func
     def energyDensity(self,grid=None):
         grid,rzp=self.get_gridrzp(grid)
         if 'veq' not in self.fielddict:
@@ -592,9 +614,9 @@ class hcfields:
 
         fac=-1.0
         nfour=self.fielddict['jfour'].shape[-1]
+        diff_elecd = np.nan_to_num(self.fielddict['diff_shape'][0].data[...,:nfour])
         self.powerFluxDict['etajp'] = fac * \
-            self.mu0 * self.elecd * \
-            np.nan_to_num(self.fielddict['diff_shape'][0].data[...,:nfour]) * \
+            self.mu0 * self.elecd * diff_elecd * \
             self.dotPlusCc(self.fielddict['jfour'][0:3],
                            self.fielddict['jfour'][0:3])
 
@@ -602,6 +624,7 @@ class hcfields:
         div_pie_pert = self.fft(self.fielddict['ndivPiepert']) #div Pi_e /ne
         self.powerFluxDict['divPie'] =fac * \
             self.dotPlusCc(div_pie_pert,self.fielddict['jfour'][0:3])
+
 
         fac=1.0 #fac should be one, keep as 2 for convergence testing
         self.powerFluxDict['jxbeq'] = fac * \
@@ -638,6 +661,42 @@ class hcfields:
             fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
 
     @timer.timer_func
+    def advectPowerFlux(self,grid=None):
+        grid,rzp=self.get_gridrzp(grid)
+        if 'veq' not in self.fielddict:
+            self.eval_v(grid,fft=True)
+        if 'neq' not in self.fielddict:
+            self.eval_n(grid,fft=False)
+
+        gradveq = self.fielddict['veq'].grad()
+        gradve0 = self.fielddict['ve0'].grad()
+        gradvp = self.fielddict['vpert'].grad()
+
+        veq_dot_gradvp =self.fielddict['veq'].dot(gradvp)
+        ve0_dot_gradvp =self.fielddict['ve0'].dot(gradvp)
+        vp_dot_gradveq =self.fielddict['vpert'].dot(gradveq)
+        vp_dot_gradve0 =self.fielddict['vpert'].dot(gradve0)
+        vp_dot_gradvp =self.fielddict['vpert'].dot(gradvp)
+
+
+        neq_v_dot_grad_v_eq = self.fft(self.fielddict['neq'] *  \
+                                       (veq_dot_gradvp + vp_dot_gradveq) )
+
+        neq_v_dot_grad_v_n0 = self.fft(self.fielddict['neq'] *  \
+                                       (ve0_dot_gradvp + vp_dot_gradve0) )
+        neq_v_dot_grad_v_p = self.fft(self.fielddict['neq'] * vp_dot_gradvp )
+
+        fac = -1.0 * self.mi
+        self.advectDict['rhovdveq'] = fac * \
+            self.dotPlusCc(neq_v_dot_grad_v_eq,self.fielddict['vfour'][0:3])
+
+        self.advectDict['rhovdvn0'] = fac * \
+            self.dotPlusCc(neq_v_dot_grad_v_n0 ,self.fielddict['vfour'][0:3])
+
+        self.advectDict['rhovdvp'] = fac * \
+            self.dotPlusCc(neq_v_dot_grad_v_p,self.fielddict['vfour'][0:3])
+
+    @timer.timer_func
     def clean_up(self):
         for key, field in self.fielddict.items():
             field = None
@@ -648,5 +707,9 @@ class hcfields:
         for key, field in self.powerFluxDict.items():
             field = None
         self.powerFluxDict={}
+        for key, field in self.advectDict.items():
+            field = None
+        self.advectDict={}
+        self.filter = None
         self.eval=None
         self.grid=None
