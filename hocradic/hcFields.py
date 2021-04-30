@@ -477,6 +477,8 @@ class hcfields:
         if 'veq' not in self.fielddict:
             self.eval_v(grid,fft=True)
         iso_visc = self.physics_nml.get('iso_visc',0.0)
+        if isinstance(iso_visc,(np.ndarray,list)):
+            iso_visc=iso_visc[0]
         ndens = self.equil_nml.get('ndens',1.e20)
         mtot = self.mtot
         if iso_visc > 0:
@@ -581,8 +583,8 @@ class hcfields:
         except:
             print("Can't read elecd from nimrod.in")
             raise KeyError
-        self.calculate_neo_div_pi()
-        self.calculate_E()
+        self.calculate_neo_div_pi(grid=grid)
+        self.calculate_E(grid=grid)
 
         jeq_cross_bpert = self.fielddict['jeq'].cross(self.fielddict['bpert'],dmod=0)
         jpert_cross_beq = self.fielddict['jpert'].cross(self.fielddict['beq'],dmod=0)
@@ -639,7 +641,7 @@ class hcfields:
         self.powerFluxDict['ngpp'] = fac * \
             self.dotPlusCc(gradp_pert,self.fielddict['vfour'][0:3])
 
-        div_pi = self.calculate_viscositiy()
+        div_pi = self.calculate_viscositiy(grid=grid)
         fac = - 1.0
         if div_pi is not None:
             div_pi_pert = self.fft(div_pi)
@@ -712,4 +714,20 @@ class hcfields:
         self.advectDict={}
         self.filter = None
         self.eval=None
+        self.grid=None
+
+    @timer.timer_func
+    def clean_up_fsa(self):
+        for key, field in self.fielddict.items():
+            field = None
+        self.fielddict={}
+        #for key, field in self.energyDict.items():
+        #    field = None
+        #self.energyDict={}
+        for key, field in self.powerFluxDict.items():
+            field = None
+        self.powerFluxDict={}
+        for key, field in self.advectDict.items():
+            field = None
+        self.advectDict={}
         self.grid=None
