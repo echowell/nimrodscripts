@@ -21,6 +21,58 @@ def pickle_sort(file):
 def dump_sort(file):
   return int(file.split('.')[1])
 
+def time_hist(steplist):
+    print(len(steplist))
+    time=np.zeros(len(steplist))
+    psi21=np.zeros(len(steplist))
+    psi31=np.zeros(len(steplist))
+    psi41=np.zeros(len(steplist))
+    psi32=np.zeros(len(steplist))
+    psi43=np.zeros(len(steplist))
+    psi54=np.zeros(len(steplist))
+    psi65=np.zeros(len(steplist))
+    times=[]
+    mlist=[-1,-2,-3,-4]
+    qlist=[-1,-2,-3,-4]
+
+    for istep,step in enumerate(steplist):
+        print(istep,step.step, step.time)
+        time[istep]=step.time
+        #if step.surfmn_data==False:
+        #    step.read_surfmn()
+        psi21[istep]=step.get_resonance("psi",1,-2)
+        psi31[istep]=step.get_resonance("psi",1,-3)
+        psi41[istep]=step.get_resonance("psi",1,-4)
+        psi43[istep]=step.get_resonance("psi",3,-4)
+        psi32[istep]=step.get_resonance("psi",2,-3)
+        psi54[istep]=step.get_resonance("psi",4,-5)
+        psi65[istep]=step.get_resonance("psi",5,-6)
+        if step.step==00000:
+            #print(step.mr.shape,step.q.shape)
+            eq_q2 = step.get_rho_q(q=-2)
+            eq_q3 = step.get_rho_q(q=-3)
+            eq_q65 = step.get_rho_q(q=-1.2)
+            eq_q54 = step.get_rho_q(q=-1.25)
+            eq_q43 = step.get_rho_q(q=-4./3.)
+            eq_q32 = step.get_rho_q(q=-3./2.)
+
+    fig = plt.figure(figsize=(8,6))
+    ax=fig.add_subplot(111)
+    plt.plot(time*1000,psi21*1000,label="2/1")
+    plt.plot(time*1000,psi31*1000,label="3/1")
+    plt.plot(time*1000,psi32*1000,label="3/2")
+    plt.plot(time*1000,psi43*1000,label="4/3")
+    plt.plot(time*1000,psi54*1000,label="5/4")
+    plt.plot(time*1000,psi65*1000,label="6/5")
+    plt.plot(time*1000,psi41*1000,label="4/1")
+    ax.legend(loc='best',frameon=True,ncol=2,fontsize=14)
+    plt.title(r"$\psi$",fontsize=16)
+    plt.ylabel(r'$\psi$ [mWb] ',fontsize=16)
+    plt.xlabel(r't [ms]',fontsize=16)
+    plt.tight_layout()
+    plt.show()
+
+
 
 def surfmn_runner(show_plot=True,pickle_data=False,\
                   read_pickle=False,args=[]):
@@ -83,9 +135,14 @@ def surfmn_runner(show_plot=True,pickle_data=False,\
     fargs['mmax']=mmax
 
     for file_name in dumplist:
+      print(file_name)
+      print(nimrodin)
       surf=surfmn.fsasurfmn(file_name,nimrodin)
+      print("After init")
       surf.get_dumptime()
+      print("after dumptime")
       surf.calculate(rzo=rzo,nsurf=nsurf,eqflag=eqflag,fargs=fargs)
+      print("after calculate")
       steplist.append(surf)
       if pickle_data:
         pfile=pickle_pre[0]+'.'+str(surf.step).zfill(5)+'.'+pickle_suf[0]
@@ -93,7 +150,11 @@ def surfmn_runner(show_plot=True,pickle_data=False,\
         with open(pfile,'wb') as file:
           surf.dump(file)
   if show_plot:
-#    time_hist(steplist)
+    time_hist(steplist)
+    plotlist=[54000]
+    for step in steplist:
+        if step.step in plotlist:
+            step.plot()
     pass
 
 

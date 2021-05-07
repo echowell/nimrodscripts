@@ -41,7 +41,7 @@ def hcrunner(file_name=None,
 
       hc=step.hcstepfsa(file_name,nimrodin,args['lphi'])
       hc.get_dumptime()
-      hc.calculate_power_fsa(nsurf=args['npts'],dpow=args['dpow'])
+      hc.calculate_power_fsa(nsurf=args['npts'],**args)
 #      hc.analyze_power(npts=args['npts'],plot=True)
 #      hc.analyze_power_adv(npts=args['npts'],plot=True)
 #      hc.print_integrals()
@@ -66,7 +66,7 @@ def hcrunner(file_name=None,
 
     #plot data here
     if args['plot']:
-        hc.interpolate_fsa(radial='rhon',npts=200)
+        hc.interpolate_fsa(radial='rhon',npts=200,fsa=False)
         hc.default_plot()
 
 
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--pickle', action='store_true',help='pickle data')
     parser.add_argument('--npts', '-n', type=int, default=100,help='number of surfaces')
     parser.add_argument('--lphi', '-l', type=int, default=5, help='lphi')
+    parser.add_argument('--nmax', type=int, default=5, help='namx')
     parser.add_argument('--dpow', '-d', type=float, default=0.5, help='dpow')
     parser.add_argument('--read', '-r', action='store_true',help='read pickled data')
     args = vars(parser.parse_args())

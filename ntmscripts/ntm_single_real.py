@@ -62,12 +62,14 @@ def ntm_runner(file_name=None,show_plot=True,pickle_data=False,\
 #    timer=nim_timer.nimTimer()
     ntm=step.ntmstep(file_name,nimrodin)
     ntm.get_dumptime()
+#    ntm.calculate_psi(rzo=np.array(args['rzo']),nsurf=nsurf,fargs=fargs)
+#    raise
     ntm.calculate_induction(rzo=np.array(args['rzo']),nsurf=nsurf,fargs=fargs)
     timer.timer.print_times()
     ntm.plot_fsa_phase(key=None)
     #raise
     #ntm.analyze()
-    
+
     #raise ValueError
     #ntm.get_domain()
     #ntm.eval_plot()
@@ -100,7 +102,7 @@ def ntm_runner(file_name=None,show_plot=True,pickle_data=False,\
     ntm=step.ntmstep(None,None)
     ntm.load(file_name)
     print(f"Time: {ntm.time}" )
-    ntm.plot_fsa_phase(key=None)
+    #ntm.plot_fsa_phase(key=None)
 #    with open(file_name,'rb') as file:
 #      surf=surfmn.fsasurfmn(None,None)
 #      surf.load(file)
@@ -110,7 +112,7 @@ def ntm_runner(file_name=None,show_plot=True,pickle_data=False,\
 
   #plot data here
   if args['plot']:
-    pass
+    ntm.plot_fsa_phase(key=None,time=ntm.time)
 #    surf.plot()
 
 if __name__ == "__main__":

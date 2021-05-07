@@ -161,6 +161,7 @@ class fsasurfmn:
       raise
 
   def calculate(self,rzo=None,rzx=None,nsurf=150,eqflag=0,fargs={},**kwargs):
+    print("in calculate")
     mi=kwargs.get("mi",3.3435860e-27)
     qe=kwargs.get("qe",1.609e-19)
     self.ifour=fargs.get("ifour")
@@ -169,10 +170,13 @@ class fsasurfmn:
     self.setprofiles=True
 
     #first call to fsa is to calcualte q
+    print("before ceval")
     cevalnimrod=ceval.EvalCompNimrod(self.dumpfile,fieldlist='nvptbj')
+    print("after ceval")
     dvar, yvar, contours = cfsa.FSA(cevalnimrod, rzo, self.dummy_fsa, 1, \
       nsurf=nsurf,depvar='eta',dpow=0.5,rzx=rzx,flag=eqflag,normalize=True, \
       fargs=fargs)
+
 
     iend=-1
     while np.isnan(yvar[:,iend]).any():
@@ -216,6 +220,26 @@ class fsasurfmn:
     self.bsmn=interp1d(dvar[1,:iend],bsmn, kind='cubic')(self.rhon)
     self.bmn =interp1d(dvar[1,:iend],bmn , kind='cubic')(self.rhon)
 
+  def get_resonance(self,field,nn,mm):
+      ''' Evaluate the resonant component of a field at the given resonces'''
+      if nn<1:
+        print("nn must be positive by convention in get_resonance")
+        raise ValueError
+      ndex=nn-1 #todo check
+      mdex=self.get_m_index(mm)
+      if ndex==None:
+        print(f"{nn} is not a n number in surfmn file")
+        raise ValueError
+      if mdex==None:
+        print(f"{mm} is not an m number in surfmn file")
+        raise ValueError
+      qres=mm/nn
+      #if qres<self.qmin or qres>self.qmax:
+      #    print(qres,self.qmin,self.qmax)
+      #    print(f"The q value {qres} is not resonant")
+      #    raise ValueError
+      resfield=interp1d(self.rhon,self.bmn[ndex,mdex,:])
+      return resfield(self.get_rho_q(qres))
 
   def plot(self,pargs={}):
     for im,imode in enumerate(self.ifour):
@@ -240,13 +264,13 @@ class fsasurfmn:
     if 'mlists' in pargs:
       if ii<len(pargs['mlists'][ii]):
         mlist=pargs['mlists'][ii]
-
+    rhomax=np.max(self.rhon)
     for im,this_m in enumerate(mlist):
       this_i = self.get_m_index(this_m)
       if this_i!= None:
         mlbl = "m = " + str(this_m)
         tc=colorlist[im%len(colorlist)]
-        ax.plot(self.rhon,self.bmn[ii,this_i,:]*1000, color=tc, label=mlbl)
+        ax.plot(self.rhon/rhomax,self.bmn[ii,this_i,:]*1000, color=tc, label=mlbl)
     try:
       qlist=pargs['qlists'][ii]
     except:
@@ -268,7 +292,7 @@ class fsasurfmn:
         irho = self.get_rho_q(qq)
         qlbl = f"q = {qq:.2f}"
         tc=colorlist[iq]
-        ax.axvline(irho,ls=':',color=tc, label=qlbl)
+        ax.axvline(irho/rhomax,ls=':',color=tc, label=qlbl)
       except:
         print(f"q={qq:.2f} is not in the domain")
     ax.axhline(0,ls='-',c='k')

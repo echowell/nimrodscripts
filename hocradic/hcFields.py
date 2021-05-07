@@ -541,6 +541,19 @@ class hcfields:
 
         self.fielddict['epert'] = Efield
 
+        self.fielddict['edis'] = self.mu0 * self.elecd * j_vec - div_pi_term
+        self.fielddict['elin'] = - self.fielddict['veq'].cross(
+                                   self.fielddict['bpert']) - \
+                                   self.fielddict['vpert'].cross(
+                                   self.fielddict['beq'])
+        self.fielddict['eqln'] = - self.fielddict['ve0'].cross(
+                                   self.fielddict['bpert']) - \
+                                   self.fielddict['vpert'].cross(
+                                   self.fielddict['be0'])
+
+        self.fielddict['enon'] = - self.fielddict['vpert'].cross(
+                                   self.fielddict['bpert'])
+
         return None
 
     @timer.timer_func
@@ -661,6 +674,34 @@ class hcfields:
         self.powerFluxDict['poynting'] = fac1 * \
             self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
             fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
+
+        if "edis" in self.fielddict:
+            eFour = self.fft(self.fielddict['edis'],type='v')
+            curlEFour = self.fft(self.fielddict['edis'].curl(dmod=0),type='v')
+            self.powerFluxDict['poyndis'] = fac1 * \
+                self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
+                fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
+
+        if "elin" in self.fielddict:
+            eFour = self.fft(self.fielddict['elin'],type='v')
+            curlEFour = self.fft(self.fielddict['elin'].curl(dmod=0),type='v')
+            self.powerFluxDict['poynlin'] = fac1 * \
+                self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
+                fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
+
+        if "eqln" in self.fielddict:
+            eFour = self.fft(self.fielddict['eqln'],type='v')
+            curlEFour = self.fft(self.fielddict['eqln'].curl(dmod=0),type='v')
+            self.powerFluxDict['poynqln'] = fac1 * \
+                self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
+                fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
+
+        if "enon" in self.fielddict:
+            eFour = self.fft(self.fielddict['enon'],type='v')
+            curlEFour = self.fft(self.fielddict['enon'].curl(dmod=0),type='v')
+            self.powerFluxDict['poynnon'] = fac1 * \
+                self.dotPlusCc(self.fielddict['bfour'][0:3],curlEFour[0:3]) + \
+                fac2 * self.dotPlusCc(eFour[0:3],self.fielddict['jfour'][0:3])
 
     @timer.timer_func
     def advectPowerFlux(self,grid=None):

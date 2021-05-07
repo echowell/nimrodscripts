@@ -287,6 +287,7 @@ class hcstepfsa:
 
 #        nsurf=100
         dpow=kwargs.get('dpow',0.5)
+        nmax = kwargs.get('nmax',5)
         rzo=np.array([1.76821,-0.0188439,0.0])
         oPoint=self.find_pf_null(self.fields.eval, rzo, flag=0)
         rzx=np.array([1.27,-1.14,0.0])
@@ -304,8 +305,9 @@ class hcstepfsa:
         fargs['sfac']=1.e-2
         fargs['nmin']=1
         fargs['nmax']=5
-        self.nmodes=fargs['nmax']-fargs['nmin']+1
-        self.nmax=fargs['nmax']
+        self.nmodes=nmax-fargs['nmin']+1
+        self.nmax=nmax
+
         #to check nmax < nmodes
       #
 
@@ -392,7 +394,7 @@ class hcstepfsa:
 
         return None
 
-    def default_plot(self, fig_size = [12,6.75],qlist=None):
+    def default_plot(self, fig_size = [8,6],qlist=None):
 
         DEFAULT_q = [-1.2, -1.5, -2, -3, -4]
         if not qlist:
@@ -412,9 +414,18 @@ class hcstepfsa:
                   self.fsa_interp['rhovdvn0'] + \
                   self.fsa_interp['rhovdvp']
 
+        try:
+            poyndis_power = self.fsa_interp['poyndis']
+            poynlin_power = self.fsa_interp['poynlin']
+            poynqln_power = self.fsa_interp['poynqln']
+            poynnon_power = self.fsa_interp['poynnon']
+        except:
+            pass
         total_power = np.zeros_like(adv_power)
+        skip_list = ['poyndis', 'poynlin', 'poynqln', 'poynnon']
         for key, item in self.fsa_interp.items():
-            total_power+=item
+            if key not in skip_list:
+                total_power+=item
 
         #total_power -= self.fsa_interp['divpip']
         diss_power = ohm_power + neoi_power + neoe_power+ visc_power
@@ -428,7 +439,8 @@ class hcstepfsa:
         ##return
 
         y_label = r"$\Omega_n$ [MW/m^3]"
-        xlim = [0,0.9]
+        y_label = r"$\Omega_n$ [MW/m]"
+        xlim = [0,0.85]
         max_idx = -1
         while np.max(self.r[:max_idx])>0.9:
             max_idx -= 1
@@ -438,12 +450,12 @@ class hcstepfsa:
         for idx,nn in enumerate(nlist):
             fig, ax = plt.subplots(figsize=fig_size)
 
-            ax.plot(self.r[:max_idx], lin_power[idx,:max_idx]/10**6, alpha=0.7, label="lin")
-            ax.plot(self.r[:max_idx], qua_power[idx,:max_idx]/10**6, alpha=0.7, label="qlin")
-            ax.plot(self.r[:max_idx], non_power[idx,:max_idx]/10**6, alpha=0.7, label="non")
-            ax.plot(self.r[:max_idx], diss_power[idx,:max_idx]/10**6, alpha=0.7, label="diss")
-            ax.plot(self.r[:max_idx], poyn_power[idx,:max_idx]/10**6, alpha=0.7, label="poyn")
-            ax.plot(self.r[:max_idx], total_power[idx,:max_idx]/10**6, alpha=0.7, label="tot")
+            ax.plot(self.r[:max_idx], total_power[idx,:max_idx]/10**6, alpha=0.7, label="Total",color='tab:brown')
+            ax.plot(self.r[:max_idx], lin_power[idx,:max_idx]/10**6, alpha=0.7, label="Lin",color='tab:orange')
+            ax.plot(self.r[:max_idx], qua_power[idx,:max_idx]/10**6, alpha=0.7, label="QL",color ='tab:green')
+            ax.plot(self.r[:max_idx], non_power[idx,:max_idx]/10**6, alpha=0.7, label="NL",color='tab:red')
+            ax.plot(self.r[:max_idx], diss_power[idx,:max_idx]/10**6, alpha=0.7, label="Diss",color='tab:purple')
+            ax.plot(self.r[:max_idx], poyn_power[idx,:max_idx]/10**6, alpha=0.7, label="PF",color='tab:blue')
 
 
             title = f"n={nn} power at {self.time*1000:.2f}ms"
@@ -457,23 +469,95 @@ class hcstepfsa:
                 except:
                     print("could not find q")
                     pass
-            ax.legend(loc='best',ncol=2)
+            plt.legend(ncol=2, loc='upper left', fontsize = 18, frameon=True, framealpha=0.8,handlelength=1)
+
+            ax.set(xlabel=self.r_label, ylabel=y_label, title=title, xlim=xlim)
+
+            plt.axhline(0,color='k')
+            #ax.ticklabel_format(axis='both', style='sci', scilimits=(10**3,10**-3),
+            #            useOffset=None, useLocale=None, useMathText=True)
+
+            plt.tight_layout()
+            plt.show()
+### plot 2
+        for idx,nn in enumerate(nlist):
+            fig, ax = plt.subplots(figsize=fig_size)
+
+            ax.plot(self.r[:max_idx], total_power[idx,:max_idx]/10**6, alpha=0.7, label="Total",color='tab:brown')
+            #ax.plot(self.r[:max_idx], (lin_power[idx,:max_idx]+poynlin_power[idx,:max_idx])/10**6, alpha=0.7, label="Lin+LPF",color='tab:orange')
+            #ax.plot(self.r[:max_idx], (qua_power[idx,:max_idx]+poynqln_power[idx,:max_idx])/10**6, alpha=0.7, label="QL+QPF",color ='tab:green')
+            ax.plot(self.r[:max_idx], (non_power[idx,:max_idx])/10**6, alpha=0.7, label="NL",color='tab:red')
+            #ax.plot(self.r[:max_idx], (diss_power[idx,:max_idx]+poyndis_power[idx,:max_idx])/10**6, alpha=0.7, label="Diss+DPF",color='tab:purple')
+            #ax.plot(self.r[:max_idx], poyn_power[idx,:max_idx]/10**6, alpha=0.7, label="PF",color='tab:blue')
+
+
+            title = f"n={nn} power at {self.time*1000:.2f}ms"
+            qlist2 = [-1.2,-4/3, -1.5,-5/3, -2, -3, -4]
+            c2list = ['tab:blue','tab:red','tab:blue','tab:red','tab:blue','tab:blue','tab:blue']
+            idx =0
+            for q in qlist2:
+                print(q)
+                try:
+                    rq = self.get_r_of_q(q)
+                    print(rq)
+                    ax.axvline(rq,ls=':',color = c2list[idx])
+                    idx+=1
+                except:
+                    print("could not find q")
+                    pass
+            plt.legend(ncol=1, loc='upper left', fontsize = 18, frameon=True, framealpha=0.8,handlelength=1)
+            ax.set(xlabel=self.r_label, ylabel=y_label, title=title, xlim=xlim)
+
+
+            #ax.ticklabel_format(axis='both', style='sci', scilimits=(10**3,10**-3),
+            #            useOffset=None, useLocale=None, useMathText=True)
+            plt.axhline(0,color='k')
+            plt.tight_layout()
+            plt.show()
+#plot 2b
+        for idx,nn in enumerate(nlist):
+            fig, ax = plt.subplots(figsize=fig_size)
+
+            ax.plot(self.r[:max_idx], total_power[idx,:max_idx]/10**6, alpha=0.7, label="Total",color='tab:brown')
+            ax.plot(self.r[:max_idx], (lin_power[idx,:max_idx]+poyn_power[idx,:max_idx])/10**6, alpha=0.7, label="Lin+PF",color='tab:orange')
+            ax.plot(self.r[:max_idx], (qua_power[idx,:max_idx])/10**6, alpha=0.7, label="QL",color ='tab:green')
+            ax.plot(self.r[:max_idx], (non_power[idx,:max_idx])/10**6, alpha=0.7, label="NL",color='tab:red')
+            ax.plot(self.r[:max_idx], (diss_power[idx,:max_idx])/10**6, alpha=0.7, label="Diss",color='tab:purple')
+#            ax.plot(self.r[:max_idx], poyn_power[idx,:max_idx]/10**6, alpha=0.7, label="PF",color='tab:blue')
+
+
+            title = f"n={nn} power at {self.time*1000:.2f}ms"
+            qlist2 = [-1.2,-4/3, -1.5,-5/3, -2, -3, -4]
+            c2list = ['tab:blue','tab:red','tab:blue','tab:red','tab:blue','tab:blue','tab:blue']
+            idx =0
+            for q in qlist2:
+                print(q)
+                try:
+                    rq = self.get_r_of_q(q)
+                    print(rq)
+                    ax.axvline(rq,ls=':',color = c2list[idx])
+                    idx+=1
+                except:
+                    print("could not find q")
+                    pass
+            plt.legend(ncol=1, loc='upper left', fontsize = 18, frameon=True, framealpha=0.8,handlelength=1)
 
             ax.set(xlabel=self.r_label, ylabel=y_label, title=title, xlim=xlim)
 
 
             #ax.ticklabel_format(axis='both', style='sci', scilimits=(10**3,10**-3),
             #            useOffset=None, useLocale=None, useMathText=True)
-
+            plt.axhline(0,color='k')
             plt.tight_layout()
             plt.show()
-
+#plot 3
         for idx,nn in enumerate(nlist):
             fig, ax = plt.subplots(figsize=fig_size)
 
-            ax.plot(self.r[:max_idx], (lin_power[idx,:max_idx]+poyn_power[idx,:max_idx])/10**6, alpha=0.7, label="lin+poy")
+            ax.plot(self.r[:max_idx], (lin_power[idx,:max_idx]+poynlin_power[idx,:max_idx])/10**6, alpha=0.7, label="lin+poy")
             ax.plot(self.r[:max_idx], qua_power[idx,:max_idx]/10**6, alpha=0.7, label="qlin")
-            ax.plot(self.r[:max_idx], non_power[idx,:max_idx]/10**6, alpha=0.7, label="non")
+            ax.plot(self.r[:max_idx], (non_power[idx,:max_idx])/10**6, alpha=0.7, label="non")
+            ax.plot(self.r[:max_idx], (non_power[idx,:max_idx]+poynnon_power[idx,:max_idx])/10**6, alpha=0.7, label="non+poy")
             ax.plot(self.r[:max_idx], diss_power[idx,:max_idx]/10**6, alpha=0.7, label="diss")
             ax.plot(self.r[:max_idx], total_power[idx,:max_idx]/10**6, alpha=0.7, label="tot")
 

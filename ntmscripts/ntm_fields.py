@@ -16,7 +16,7 @@ class ntmfields:
         this seperates the evaulation of these fields from fsa interation
         or plotting on various meshs
     '''
-        
+
     def __init__(self,dumpfile,nimrodin):
         self.dumpfile=dumpfile
         self.nimrodin=nimrodin
@@ -34,7 +34,7 @@ class ntmfields:
         self.veq=False
         self.vpert=False
         self.diff_dmode=0
-        
+
         if self.nimrodin is not None:
           self.nml=f90nml.read(self.nimrodin)
           self.grid_nml=self.nml.get('grid_input',{})
@@ -47,9 +47,9 @@ class ntmfields:
           self.set_physical_constants()
           self.set_evalnimrod()
         return None
-        
+
     def set_physical_constants(self):
-        ''' 
+        '''
         Read namelists and set physical constants
         '''
         self.mu0=self.const_nml.get('mu0_input',np.pi*4.0e-7)
@@ -61,7 +61,7 @@ class ntmfields:
         self.kblz=self.const_nml.get('kblz_input',1.60217733e-19)
         self.clight=self.const_nml.get('c_input',2.99792458e8)
         return None
-        
+
     def set_evalnimrod(self):
         '''
         Set Eval Nimrod
@@ -69,7 +69,7 @@ class ntmfields:
         if self.eval is None:
             self.eval=eval.EvalNimrod(self.dumpfile,fieldlist='nvbtjpd')
         return None
-        
+
     def get_gridrzp(self,grid):
         '''
         returns grid and rzp, and grid for a given grid
@@ -77,7 +77,7 @@ class ntmfields:
         elif grid is an EvalGrid insatnace
         else np grid
         '''
-        if grid is None:        
+        if grid is None:
           if self.grid is None:
             print("ntm_fields_grid is not set")
             raise ValueError
@@ -87,10 +87,10 @@ class ntmfields:
         elif isinstance(grid,eval.EvalGrid):
           rzp=grid.rzp
         else:
-          rzp=grid 
-        return grid,rzp 
-        
-    @timer.timer_func    
+          rzp=grid
+        return grid,rzp
+
+    @timer.timer_func
     def fft(self,pert,axis=-1):
         ''' NIMROD stores it's field data as f(phi) = sum_{-n}^n f_n exp(inphi)
             This implies that the normalization 1/N should be done in the transform
@@ -99,7 +99,7 @@ class ntmfields:
         '''
         fpert = fft(pert.data,axis=axis,norm=None)/pert.data.shape[axis]
         return fpert
-    
+
     def set_method(self,method):
       if method == "induction":
         self.ndmode=1
@@ -109,8 +109,8 @@ class ntmfields:
         self.veq=True
         self.vpert=True
         self.diff_dmode=1
-    
-    @timer.timer_func        
+
+    @timer.timer_func
     def eval_symm(self,fname,rzp,dmode,eq):
         if eq not in [1,3]:
             print("eval_symm only works for eq=1 or 3")
@@ -121,9 +121,9 @@ class ntmfields:
         field=np.broadcast_to(field,(field.shape[0],rzp.shape[1]))
         return field
 
-    @timer.timer_func 
+    @timer.timer_func
     def eval_n(self,grid=None,fft=False):
-        grid,rzp=self.get_gridrzp(grid)  
+        grid,rzp=self.get_gridrzp(grid)
         if self.neq:
             if len(rzp.shape)==2:
                 field=self.eval_symm('n',rzp,dmode=self.ndmode,eq=1)
@@ -138,7 +138,7 @@ class ntmfields:
             self.fielddict['nfour']=self.fft(field)
         return None
 
-    @timer.timer_func         
+    @timer.timer_func
     def eval_v(self,grid=None,fft=False):
         grid,rzp=self.get_gridrzp(grid)
         if self.veq:
@@ -154,8 +154,8 @@ class ntmfields:
         if fft:
             self.fielddict['vfour']=self.fft(field)
         return None
-        
-    @timer.timer_func       
+
+    @timer.timer_func
     def eval_b(self,grid=None,fft=False):
         grid,rzp=self.get_gridrzp(grid)
         if len(rzp.shape)==2:
@@ -168,14 +168,14 @@ class ntmfields:
             self.fielddict['beq']=fc.Vector(field,rzp,1,True)
             field=self.eval.eval_field('b',grid,dmode=1,eq=3)
             self.fielddict['b0']=fc.Vector(field,rzp,1,True)
-        
+
         field=self.eval.eval_field('b',grid,dmode=1, eq=0)
         self.fielddict['bpert']=fc.Vector(field,rzp,1,True)
         if fft:
           self.fielddict['bfour']=self.fft(field)
         return None
 
-    @timer.timer_func 
+    @timer.timer_func
     def eval_fsa_beq2(self,grid=None):
         grid,rzp=self.get_gridrzp(grid)
         self.dump_fsa_beq2 =self.output_nml.get('dump_fsa_beq2',False)
@@ -189,8 +189,8 @@ class ntmfields:
         else:
             self.fielddict['fsa_beq2']=0.0
         return None
-        
-    @timer.timer_func   
+
+    @timer.timer_func
     def eval_j(self,grid=None,fft=False):
         grid,rzp=self.get_gridrzp(grid)
         if len(rzp.shape)==2:
@@ -204,8 +204,8 @@ class ntmfields:
         if fft:
             self.fielddict['jfour']=self.fft(field)
         return None
-        
-    @timer.timer_func 
+
+    @timer.timer_func
     def eval_neo_mask(self,grid=None):
         grid,rzp=self.get_gridrzp(grid)
         r0=self.closure_nml.get('neo_axis_r',0)
@@ -248,8 +248,8 @@ class ntmfields:
                 fval[(1,)+indicies]=-bump*dbumpdr2*dr2dx
                 fval[(2,)+indicies]=-bump*dbumpdr2*dr2dz
         return fc.Scalar(fval,rzp,1,True)
-    
-    @timer.timer_func 
+
+    @timer.timer_func
     def eval_p(self,grid=None):
           grid,rzp=self.get_gridrzp(grid)
           if len(rzp.shape)==2:
@@ -262,8 +262,8 @@ class ntmfields:
           self.fielddict['ppert']=fc.Scalar(field,rzp,2,True)
           self.fielddict['pfour']=self.fft(field)
           return None
-          
-    @timer.timer_func 
+
+    @timer.timer_func
     def eval_diff(self,grid=None):
         ''' Get the diff shape scalars from eval nimrod
             Some extralogic is needed to pull apart the different
@@ -303,13 +303,13 @@ class ntmfields:
           self.eval_n(grid)
         if not 'veq' in self.fielddict:
           self.eval_v(grid)
-        
+
         nddiff = self.physics_nml.get('nd_diff',0.0)
         veq=self.fielddict['veq']
         vpert=self.fielddict['vpert']
         neq=self.fielddict['neq']
         npert=self.fielddict['npert']
-        
+
         advecteq=veq.dot(neq.grad())
         advectlin=veq.dot(npert.grad())+vpert.dot(neq.grad())
         advectnon=vpert.dot(npert.grad())
@@ -322,7 +322,7 @@ class ntmfields:
         self.ndict['dompeq']=compeq
         self.ndict['lindiff']=nddiffusion
         return None
-        
+
     def momentum(self,grid=None):
       #todo
       pass
@@ -330,8 +330,8 @@ class ntmfields:
     def temperature(self,grid=None):
         #todo
         pass
-        
-    @timer.timer_func 
+
+    @timer.timer_func
     def ohms(self,grid=None):
         grid,rzp=self.get_gridrzp(grid)
         self.edict={}
@@ -339,7 +339,9 @@ class ntmfields:
         neoe_flag = self.closure_nml.get('neoe_flag',None)
         mu_e=self.closure_nml.get('mu_e',0.0)
         try:
-            self.elecd=self.physics_nml.get('elecd',0.0)[0]
+            self.elecd=self.physics_nml.get('elecd',0.0)
+            if isinstance(self.elecd,(np.ndarray,list)):
+                self.elecd=self.elecd[0]
         except:
             print("Can't read elecd from nimrod.in")
             raise KeyError
@@ -375,7 +377,7 @@ class ntmfields:
         self.edict['veqbp']=veqbp
         self.edict['vpbp']=vpbp
         self.edict['etajpert']=etajpert
-        
+
         if ohmslaw in ['mhd&hall','2fl']:
         #TODO
             print("Hall and two fluid Ohms law are not yet supported")
@@ -386,9 +388,9 @@ class ntmfields:
                 self.eval_p(grid)
             neq=self.fielddict['neq']
             npert=self.fielddict['npert']
-            
-        
-      
+
+
+
         if neoe_flag in ['gianakon']:
             if 'neq' not in self.fielddict:
                 self.eval_n(grid)
@@ -396,21 +398,33 @@ class ntmfields:
                 self.eval_fsa_beq2(grid)
             neq=self.fielddict['neq']
             fsa_beq2=self.fielddict['fsa_beq2']
-            
+
             ephi=[0,0,1]
             etor=fc.basis_vector('p',rzp,torgeom=True)
             bep=beq-beq.dot(etor)*etor
             neo_mask=self.eval_neo_mask(grid)
             coef=self.me*mu_e/(self.qe**2)*neo_mask
+            coef1=self.me*mu_e/(self.qe)*neo_mask
             #coef=neo_mask*mu_e
 
             divpie=coef/neq*fsa_beq2*(jpert.dot(bep))/(beq.dot(bep)**2+1.0e-8) * bep
             self.edict['divpie']=divpie
+
+            divpie1=coef1*fsa_beq2*(jpert.dot(bep))/(beq.dot(bep)**2+1.0e-8) * bep
+            self.edict['divpie1']=divpie1
+
+            divpie0=coef/neq*fsa_beq2*(bep.mag())/(beq.dot(bep)**2+1.0e-8) * bep
+            self.edict['divpie0']=divpie0
+
+            divpieb=coef1*fsa_beq2*(bep.mag())/(beq.dot(bep)**2+1.0e-8) * bep
+            self.edict['divpieb']=divpieb
+            
+            #pn.PlotNimrod.plot_scalar_plane(rzp[:,:,:,0], fsa_beq2.data[:,:,0])
             #pn.PlotNimrod.plot_scalar_plane(rzp[:,:,:,0], divpie.data[0,:,:,0])
             #pn.PlotNimrod.plot_scalar_plane(rzp[:,:,:,0], divpie.data[1,:,:,0])
         return None
-        
-    @timer.timer_func 
+
+    @timer.timer_func
     def induction(self,grid=None):
         self.ohms(grid)
         self.dbdtdict={}
@@ -444,7 +458,7 @@ class ntmfields:
             print(thisfft[0,50,:,-1])
             print(type(thisfft.real),type(self.dbdtdict[key].data))
             print(self.dbdtdict[key].data[0,50,:,0])
-            
+
             print(np.nanmax(thisfft.real[0,50,:,0]))
             fig=plt.figure(figsize=(6,8))
             ax=fig.add_subplot(111)

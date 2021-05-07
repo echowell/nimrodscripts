@@ -126,8 +126,11 @@ def neoclassical_calculator(dumpfile):
         bextrema = fsaDict['arr_3']
         bigr = fsaDict['arr_4']
     else:
+#        dvar, yvars, contours = FSA(eval_nimrod, rzo, basefsa, 10, nsurf=nsurf, \
+#                                    depvar='eta', dpow=dpow, rzx=[1.3, -1.14, 0],
+#                                    bextrema=bextrema, bigr=bigr)
         dvar, yvars, contours = FSA(eval_nimrod, rzo, basefsa, 10, nsurf=nsurf, \
-                                    depvar='eta', dpow=dpow, rzx=[1.3, -1.14, 0],
+                                    depvar='eta', dpow=dpow,
                                     bextrema=bextrema, bigr=bigr)
         fsaArr = [dvar, yvars, contours, bextrema, bigr]
         np.savez(fsafilename,*fsaArr)
