@@ -17,6 +17,15 @@ writeDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19091201_probeg/"
 readDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19100401_probe_gb/"
 writeDirectory = homeDir + "/SCRATCH/166439/03300_2_equilbria/19100401_probe_gb/"
 
+readDirectory = homeDir + "/SCRATCH/KSTAR/19118_2800ms/22032403_probeg/"
+writeDirectory = homeDir + "/SCRATCH/KSTAR/19118_2800ms/22032403_rmp_v1/"
+
+readDirectory = homeDir + "/SCRATCH/KSTAR/19118_2950_C1wall/22052401_brmp/"
+writeDirectory = homeDir + "/SCRATCH/KSTAR/19118_2950_C1wall/22052401_brmp/"
+
+readDirectory = homeDir + "/SCRATCH/KSTAR/19118_2950_C1wall/22062201_probeg/"
+writeDirectory = homeDir + "/SCRATCH/KSTAR/19118_2950_C1wall/22062201_brmp/"
+
 shotNumber = "166439"
 timeSlice = "03300"
 

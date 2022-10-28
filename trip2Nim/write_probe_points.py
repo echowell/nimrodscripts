@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 homeDir = os.environ['HOME']
 scratchDir = homeDir + '/SCRATCH/'
-wrkDir = '166439/03300_2_equilbria/19100401/'
+wrkDir = 'KSTAR/19118_2950_C1wall/22062201_probeg/'
 
 nimBdry = 'nimrod_bdry_rz.txt'
 rzFile = 'probe.points.rz.in'
